@@ -23,7 +23,11 @@ while opcion != 5:
                 print("")
         elif opcion == 2:
             username = input("Ingrese el username del usuario: ")
+            if username == "":
+                raise ValueError("El username no puede estar vacio.")
             password = input("Ingrese el password del usuario: ")
+            if password == "":
+                raise ValueError("El password no puede estar vacio.")
             usuario = Usuario(username=username, password=password)
             UsuarioDAO.insertar(usuario)
             print("")
@@ -31,12 +35,18 @@ while opcion != 5:
             print("")
         elif opcion == 3:
             id_usuario = int(input("Ingrese el ID del usuario a actualizar: "))
-            username = input("Ingrese el nuevo username del usuario: ")
-            password = input("Ingrese el nuevo password del usuario: ")
-            usuario = Usuario(id_usuario=id_usuario, username=username, password=password)
-            UsuarioDAO.actualizar(usuario)
-            log.debug(f"Usuario {usuario} actualizado.")
-            print("")
+            usuario_existente = UsuarioDAO.consultar(id_usuario)
+            if not usuario_existente:
+                log.error(f"No existe un usuario con ID {id_usuario}.")
+                print("")
+                continue
+            else:
+                username = input("Ingrese el nuevo username del usuario: ")
+                password = input("Ingrese el nuevo password del usuario: ")
+                usuario = Usuario(id_usuario=id_usuario, username=username, password=password)
+                UsuarioDAO.actualizar(usuario)
+                log.debug(f"Usuario {usuario} actualizado.")
+                print("")
         elif opcion == 4:
             id_usuario = int(input("Ingrese el ID del usuario a eliminar: "))
             usuario = Usuario(id_usuario=id_usuario)

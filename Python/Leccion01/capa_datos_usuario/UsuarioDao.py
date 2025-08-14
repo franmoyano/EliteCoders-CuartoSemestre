@@ -16,6 +16,7 @@ class UsuarioDAO:
     _INSERTAR = 'INSERT INTO usuarios(username, password) VALUES (%s, %s)'
     _ACTUALIZAR = 'UPDATE usuarios SET username=%s, password=%s WHERE id_usuario=%s'
     _ELIMINAR = 'DELETE FROM usuarios WHERE id_usuario=%s'
+    _CONSULTA = 'SELECT * FROM usuarios WHERE id_usuario=%s'
 
     @classmethod
     def seleccionar(cls):
@@ -51,6 +52,17 @@ class UsuarioDAO:
             cursor.execute(cls._ELIMINAR, valores)
             log.debug(f'Persona eliminada: {usuario}')
             return cursor.rowcount
+    @classmethod
+    def consultar(cls, id_usuario):
+        with CursorDelPool() as cursor:
+            valores = (id_usuario,)
+            cursor.execute(cls._CONSULTA, valores)
+            registro = cursor.fetchone()
+            if registro:
+                usuario = Usuario(registro[0], registro[1], registro[2])
+                return usuario
+            else:
+                return None
 
 
 if __name__ == '__main__':
