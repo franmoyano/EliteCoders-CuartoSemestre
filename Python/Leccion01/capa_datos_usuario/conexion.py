@@ -1,14 +1,14 @@
+import sys
 from psycopg2 import pool
 from logger_base import log
-import sys
 
 class Conexion:
-    _DATABASE = 'test_bd'
+    _DATABASE = 'test_db'
     _USERNAME = 'postgres'
-    _PASSWORD = 'admin'
+    _PASSWORD = '1234'
     _DB_PORT = '5432'
     _HOST = 'localhost'
-    _MIN_CON =1 
+    _MIN_CON =1
     _MAX_CON =5
     _pool=None
 
@@ -43,12 +43,12 @@ class Conexion:
         else:
             return cls._pool
 
-@classmethod
-def liberarConexion(cls, conexion):
-    cls.obtenerPool().putconn(conexion)
-    log.debug(f'Regresamos la conexion al pool: {conexion}')
+    @classmethod
+    def liberarConexion(cls, conexion):
+        cls.obtenerPool().putconn(conexion)
+        log.debug(f'Regresamos la conexion al pool: {conexion}')
 
-def cerrarConexiones(cls):
+def cerrarConexiones(cls,):
     cls.obtenerPool().closeall()
 
 if __name__ == '__main__':
