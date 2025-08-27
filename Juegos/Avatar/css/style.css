@@ -1,3 +1,20 @@
+.opcion-personaje {
+    cursor: pointer;
+    position: relative;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    border: 2px solid #87ceeb;
+}
+.opcion-personaje:hover {
+    box-shadow: 0 4px 16px rgba(30,144,255,0.25);
+    border-color: #ffe680;
+}
+.opcion-personaje input[type="radio"] {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    accent-color: #ff4500;
+}
 /* === ESTILO GENERAL === */
 body {
     margin: 0;
@@ -93,21 +110,61 @@ ol, ul {
 /* === FLEXBOX PARA OPCIONES DE PERSONAJE === */
 #seleccionar-personaje div {
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
     justify-content: center;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 label {
-    background: rgba(255,255,255,0.1);
-    padding: 0.5rem 1rem;
+    background: none;
+    padding: 0.2rem 0.5rem 0 0.5rem;
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffe680;
+    text-shadow: 1px 1px 4px #003366;
 }
 
 label:hover {
     background: rgba(255,255,255,0.2);
+}
+
+.imagen-personaje {
+    width: 150px;
+    height: 225px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 12px;
+    border: 2px solid #87ceeb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.opcion-personaje {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 1rem 0.5rem;
+    min-width: 110px;
+    min-height: 200px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    margin-bottom: 0.5rem;
+    border: 2px solid #87ceeb;
+    box-sizing: border-box;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.opcion-personaje:hover,
+.opcion-personaje:has(input[type="radio"]:checked) {
+    box-shadow: 0 4px 16px rgba(30,144,255,0.25);
+    border-color: #ffe680;
+}
 }
 
 /* === RESPONSIVE DESIGN === */
