@@ -48,7 +48,8 @@
                             <li>Barrida 🦵 vence a Patada 🦶</li>
                         </ul>
                     </li>
-                    <li><strong>Derrota del jugador:</strong> cualquier otra cosa que sea distinta a una victoria o empate.</li>
+                    <li><strong>Derrota del jugador:</strong> cualquier otra cosa que sea distinta a una victoria o
+                        empate.</li>
                 </ul>
             </li>
             <li>
@@ -77,48 +78,51 @@
 
     <section id="seleccionar-personaje" class="container">
         <h2>Elige tu Personaje</h2>
-        
+
         <div>
-            <input type="radio" name="personaje" id="zuko" value="zuko" class="selector-personaje"/>
-            <label for="zuko">Zuko</label>
-    
-            <input type="radio" name="personaje" id="katara" value="katara" class="selector-personaje"/>
-            <label for="katara">Katara</label>
-    
-            <input type="radio" name="personaje" id="aang" value="aang" class="selector-personaje"/>
-            <label for="aang">Aang</label>
-    
-            <input type="radio" name="personaje" id="toph" value="toph" class="selector-personaje"/>
-            <label for="toph">Toph</label>
+            <div class="opcion-personaje">
+                <input type="radio" name="personaje" id="zuko" value="Zuko" class="selector-personaje" />
+                <label for="zuko">Zuko</label>
+                <img src="./public/images/zuko.webp" alt="Zuko" class="imagen-personaje" />
+            </div>
+            <div class="opcion-personaje">
+                <input type="radio" name="personaje" id="katara" value="Katara" class="selector-personaje" />
+                <label for="katara">Katara</label>
+                <img src="./public/images/katara.png" alt="Katara" class="imagen-personaje" />
+            </div>
+            <div class="opcion-personaje">
+                <input type="radio" name="personaje" id="aang" value="Aang" class="selector-personaje" />
+                <label for="aang">Aang</label>
+                <img src="./public/images/aang.png" alt="Aang" class="imagen-personaje" />
+            </div>
+            <div class="opcion-personaje">
+                <input type="radio" name="personaje" id="toph" value="Toph" class="selector-personaje" />
+                <label for="toph">Toph</label>
+                <img src="./public/images/toph.webp" alt="Toph" class="imagen-personaje" />
+            </div>
         </div>
 
-
-        <button id="boton-personaje"> Seleccionar</button>
+        <button id="boton-personaje">Seleccionar</button>
     </section>
-    
+
     <section id="seleccionar-ataque" class="container">
         <h2>Elige tu ataque</h2>
-        
-        <!-- Desactive los botones, ya que generaban conflicto, tambien en js, hasta que se eliga un personaje -->
-        <p>Tu personaje <span id="personaje-jugador"></span> tiene <span id="vidas-jugador"> 3</span> vidas</p>
-        <p>El personaje <span id="personaje-enemigo"></span> del enemigo tiene <span id="vidas-enemigo"> 3</span> vidas</p>
+
+        <p>Tu personaje <span id="personaje-jugador"></span> tiene <span id="vidas-jugador">3</span> vidas</p>
+        <p>El personaje <span id="personaje-enemigo"></span> del enemigo tiene <span id="vidas-enemigo">3</span> vidas
+        </p>
         <p>
             <button id="boton-punio" disabled>Puño 🤜</button>
             <button id="boton-patada" disabled>Patada 🦶</button>
             <button id="boton-barrida" disabled>Barrida 🦵</button>
         </p>
     </section>
-    <!-- Cambie el mensaje estatico, y puse mensajes dinamicos para que muestren cada evento, y un mensaje final -->
+
     <section id="mensajes">
-        <p>
-            <span id="mensaje-jugador"></span>
-            <span id="mensaje-enemigo"></span>
-            <span id="mensaje-final"></span>
-        </p>
+        <p id="mensaje-principal"></p>
     </section>
 
-    <script src="../js/avatar.js"></script>
-
+    <script src="./js/avatar.js"></script>
 </body>
 
 </html>
