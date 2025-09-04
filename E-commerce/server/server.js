@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Sirve los archivos estáticos desde la carpeta client en la ruta /E-commerce/client
-app.use("/E-commerce/client", express.static(path.join(__dirname, "../client")));
+app.use(express.static(path.join(__dirname, "../client")));
 app.use(cors());
 
 app.get("/", function (req, res) {

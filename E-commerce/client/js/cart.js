@@ -4,9 +4,8 @@ const modalOverlay = document.getElementById("modal-overlay");
 const cartBtn = document.getElementById("cart-btn");
 const cartCounter = document.getElementById("cart-counter");
 
-// Asegúrate de que 'cart' esté definido (puede venir de otro archivo como index.js o products.js)
-// Por ahora, inicializamos como un array vacío si no está definida
-let cart = window.cart || [];
+window.cart = window.cart || [];
+const cart = window.cart;
 
 // Función para mostrar el carrito
 const displayCart = () => {
