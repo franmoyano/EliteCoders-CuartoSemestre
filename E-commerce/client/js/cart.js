@@ -4,11 +4,22 @@ const modalOverlay = document.getElementById("modal-overlay");
 const cartBtn = document.getElementById("cart-btn");
 const cartCounter = document.getElementById("cart-counter");
 
-window.cart = window.cart || [];
-const cart = window.cart;
+// Use the global cart array from index.js
+// const cart = window.cart;
+
+// Función para actualizar el contador del carrito
+function displayCartCounter() {
+  const cartLength = window.cart.reduce((acc, el) => acc + el.quanty, 0);
+  if (cartLength > 0) {
+    cartCounter.style.display = "block";
+    cartCounter.innerText = cartLength;
+  } else {
+    cartCounter.style.display = "none";
+  }
+}
 
 // Función para mostrar el carrito
-const displayCart = () => {
+function displayCart() {
   modalContainer.innerHTML = "";
   modalContainer.style.display = "block";
   modalOverlay.style.display = "block";
@@ -34,15 +45,15 @@ const displayCart = () => {
   modalContainer.append(modalHeader);
 
   // Modal body
-  if (cart.length > 0) {
-    cart.forEach((product) => {
+  if (window.cart.length > 0) {
+    window.cart.forEach((product) => {
       const modalBody = document.createElement("div");
       modalBody.className = "modal-body";
       modalBody.innerHTML = `
         <div class="product">
           <img class="product-img" src="${product.img}">
           <div class="product-info">
-            <h4>${product.productName}</h4> <!-- Corregido el error de sintaxis (? removido) -->
+            <h4>${product.productName}</h4>
           </div>
           <div class="quantity">
             <span class="quantity-btn-decrease">-</span>
@@ -80,7 +91,7 @@ const displayCart = () => {
     });
 
     // Modal footer
-    const total = cart.reduce((acc, el) => acc + el.price * el.quanty, 0);
+    const total = window.cart.reduce((acc, el) => acc + el.price * el.quanty, 0);
     const modalFooter = document.createElement("div");
     modalFooter.className = "modal-footer";
     modalFooter.innerHTML = `
@@ -93,28 +104,25 @@ const displayCart = () => {
     modalText.innerText = "Your cart is empty";
     modalContainer.append(modalText);
   }
-};
-
-// Evento para abrir el carrito
-cartBtn.addEventListener("click", displayCart);
+}
 
 // Función para eliminar productos del carrito
-const deleteCartProduct = (id) => {
-  const foundId = cart.findIndex((element) => element.id === id);
+function deleteCartProduct(id) {
+  const foundId = window.cart.findIndex((element) => element.id === id);
   if (foundId !== -1) {
-    cart.splice(foundId, 1);
+    window.cart.splice(foundId, 1);
     displayCart();
     displayCartCounter();
   }
-};
+}
 
-// Función para actualizar el contador del carrito
-const displayCartCounter = () => {
-  const cartLength = cart.reduce((acc, el) => acc + el.quanty, 0);
-  if (cartLength > 0) {
-    cartCounter.style.display = "block";
-    cartCounter.innerText = cartLength;
-  } else {
-    cartCounter.style.display = "none";
-  }
-};
+// Make displayCartCounter globally accessible
+window.displayCartCounter = displayCartCounter;
+
+// Also make cart globally accessible for safety
+if (typeof window.cart === 'undefined') {
+  window.cart = [];
+}
+
+// Evento para abrir el carrito
+cartBtn.addEventListener("click", displayCart);
