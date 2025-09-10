@@ -1,3 +1,88 @@
+// Clase base para crear personajes
+class Personaje {
+    constructor(nombre, imagen) {
+        this.nombre = nombre;
+        this.imagen = imagen;
+    }
+
+    // Método para crear el HTML del personaje
+    crearElementoHTML() {
+        return `
+            <div class="opcion-personaje">
+                <input type="radio" name="personaje" id="${this.nombre.toLowerCase()}" 
+                       value="${this.nombre}" class="selector-personaje" />
+                <label for="${this.nombre.toLowerCase()}">${this.nombre}</label>
+                <img src="${this.imagen}" alt="${this.nombre}" class="imagen-personaje" />
+            </div>
+        `;
+    }
+}
+
+// Clase para manejar todos los personajes del juego
+class GestorPersonajes {
+    constructor() {
+        this.personajes = [];
+        this.inicializarPersonajes();
+    }
+
+    // Crear todos los personajes iniciales
+    inicializarPersonajes() {
+        this.personajes = [
+            new Personaje("Zuko", "./public/images/zuko.webp"),
+            new Personaje("Katara", "./public/images/katara.png"),
+            new Personaje("Aang", "./public/images/aang.png"),
+            new Personaje("Toph", "./public/images/toph.webp")
+        ];
+    }
+
+    // Agregar un nuevo personaje
+    agregarPersonaje(nombre, imagen) {
+        const nuevoPersonaje = new Personaje(nombre, imagen);
+        this.personajes.push(nuevoPersonaje);
+        this.generarHTMLPersonajes(); // Regenerar la interfaz
+        return nuevoPersonaje;
+    }
+
+    // Obtener todos los nombres de personajes (para selección aleatoria)
+    obtenerNombresPersonajes() {
+        return this.personajes.map(personaje => personaje.nombre);
+    }
+
+    // Generar HTML dinámicamente
+    generarHTMLPersonajes() {
+        const contenedor = document.getElementById('seleccionar-personaje');
+        if (!contenedor) return;
+
+        const divPersonajes = contenedor.querySelector('div');
+        if (divPersonajes) {
+            let htmlPersonajes = '';
+            this.personajes.forEach(personaje => {
+                htmlPersonajes += personaje.crearElementoHTML();
+            });
+            divPersonajes.innerHTML = htmlPersonajes;
+
+            // Reactivar los event listeners para los nuevos elementos
+            this.activarEventListeners();
+        }
+    }
+
+    // Reactivar event listeners después de regenerar HTML
+    activarEventListeners() {
+        document.querySelectorAll(".opcion-personaje").forEach((div) => {
+            div.addEventListener("click", function () {
+                const radio = div.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+            });
+        });
+    }
+}
+
+// Crear instancia del gestor de personajes
+const gestorPersonajes = new GestorPersonajes();
+
 const state = {
   ataqueJugador: undefined,
   ataqueEnemigo: undefined,
@@ -96,7 +181,7 @@ function seleccionarPersonajeJugador() {
 }
 
 function seleccionarPersonajeEnemigo() {
-  const personajes = ["Zuko", "Katara", "Aang", "Toph"];
+  const personajes = gestorPersonajes.obtenerNombresPersonajes();
   const personajeAleatorio = personajes[Math.floor(Math.random() * personajes.length)];
 
   el.spanPersonajeEnemigo.innerHTML = personajeAleatorio;
@@ -244,16 +329,13 @@ function numeroRandom(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+// Función para agregar personajes fácilmente
+function agregarNuevoPersonaje(nombre, rutaImagen) {
+  return gestorPersonajes.agregarPersonaje(nombre, rutaImagen);
+}
+
 window.addEventListener("load", () => {
   iniciarJuego();
-  // Permite seleccionar el radio al hacer click en el div .opcion-personaje
-  document.querySelectorAll(".opcion-personaje").forEach((div) => {
-    div.addEventListener("click", function () {
-      const radio = div.querySelector('input[type="radio"]');
-      if (radio) {
-        radio.checked = true;
-        radio.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-    });
-  });
+  gestorPersonajes.generarHTMLPersonajes();
+  gestorPersonajes.activarEventListeners();
 });
