@@ -7,16 +7,6 @@ const cartCounter = document.getElementById("cart-counter");
 // Use the global cart array from index.js
 // const cart = window.cart;
 
-// Función para actualizar el contador del carrito
-function displayCartCounter() {
-  const cartLength = window.cart.reduce((acc, el) => acc + el.quanty, 0);
-  if (cartLength > 0) {
-    cartCounter.style.display = "block";
-    cartCounter.innerText = cartLength;
-  } else {
-    cartCounter.style.display = "none";
-  }
-}
 
 // Función para mostrar el carrito
 function displayCart() {
@@ -113,6 +103,17 @@ function deleteCartProduct(id) {
     window.cart.splice(foundId, 1);
     displayCart();
     displayCartCounter();
+  }
+}
+
+// Función para actualizar el contador del carrito
+function displayCartCounter() {
+  const cartLength = window.cart.reduce((acc, el) => acc + el.quanty, 0);
+  if (cartLength > 0) {
+    cartCounter.style.display = "block";
+    cartCounter.innerText = cartLength;
+  } else {
+    cartCounter.style.display = "none";
   }
 }
 
