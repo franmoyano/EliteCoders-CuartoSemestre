@@ -1,5 +1,9 @@
 const shopContent = document.getElementById("shopContent");
 const cart = []; //este es el carrito
+
+// Make cart globally accessible
+window.cart = cart;
+
 products.forEach((product) => {
     const content = document.createElement("div");
     content.innerHTML= `
@@ -21,16 +25,22 @@ products.forEach((product) => {
                 cart.map((prod)=>{
                     if(prod.id === product.id){
                         prod.quanty++;
+                        if (typeof displayCartCounter === 'function') {
+                            displayCartCounter();
+                        }
                     }
                 });
             }else{
                 cart.push({
                     id:product.id,
-                    productName:product.productName,
+                    productName:product.name,
                     price: product.price,
                     quanty: product.quanty,
                     img:product.img,
                 });
+                if (typeof displayCartCounter === 'function') {
+                    displayCartCounter();
+                }
             }
         });
     });     

@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css">
         <title>Document</title>
     </head>
     <body>
@@ -13,16 +13,42 @@
         </div>
         <!--cart btn-->
         <div class="card-btn" id="cart-btn">🛒</div>
-        
+        <!--cart counter-->
+        <span class="cart-counter" id="cart-counter">0</span>
+
         <!--modal-->
         <div class="modal-overlay" id="modal-overlay"></div> 
         <div class="modal-container" id="modal-container"></div>
 
-        <!-- Al final de index.html -->
-        <script src="/E-commerce/client/js/products.js"></script>
-        <script src="/E-commerce/client/js/index.js"></script>
-        <script src="/E-commerce/client/js/cart.js"></script>
+        <!-- Container para el boton de pagar-->
+        <div id="walletBrick_container"></div>
 
-        
+        <!-- Scripts -->
+        <!-- Al final de index.html -->
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/index.js"></script>
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <script>
+        // Configurar clave publica
+        const publicKey = "APP_USR-b36bf104-feac-4df0-9e20-5085707c1fed";
+        // configuracion de la preferencia de ID que se recibe del backend
+        const preferenceId = preference_id;
+
+        // Inicializa o SDK do Mercado Pago
+        const mp = new MercadoPago(publicKey);
+
+        // boton de pago
+        const bricksBuilder = mp.bricks();
+        const renderWalletBrick = async (bricksBuilder) => {
+            await bricksBuilder.create("wallet", "walletBrick_container", {
+                initialization: {
+                    preferenceId: preferenceId,
+                }
+            });
+        };
+
+        renderWalletBrick(bricksBuilder);
+    </script>
     </body>
 </html>
