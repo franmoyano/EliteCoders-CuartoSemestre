@@ -28,7 +28,7 @@ app.use(express.static(path.resolve(__dirname, '../client')));
 // SDK de Mercado Pago
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 // Agrega credenciales
-const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+const client = new MercadoPagoConfig({ accessToken: 'APP_USR-2252390570888624-091016-0764c5908b43b2003802652d1ab1cfb3-2670385886' });
 
 // Rutas de Ping
 app.get('/ping', (req, res) => {
