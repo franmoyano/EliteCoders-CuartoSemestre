@@ -81,6 +81,20 @@
             <!-- Los personajes se generan automáticamente con JavaScript -->
         </div>
         <button id="boton-personaje">Seleccionar</button>
+        <button id="toggle-form-nuevo-personaje" style="background:linear-gradient(45deg,#ffb347,#ffcc33);color:#222; margin-top:1rem;">Agregar personaje</button>
+        <!-- Formulario para agregar un nuevo personaje (inicialmente oculto) -->
+        <form id="form-nuevo-personaje" style="margin-top:1rem; display:none; flex-direction:column; align-items:center; gap:0.5rem;">
+            <h4>Agregar nuevo personaje</h4>
+            <select id="select-nombre-personaje" required style="padding:0.4rem; border-radius:8px; border:1px solid #87ceeb;">
+                <option value="">Selecciona un personaje</option>
+                <option value="Zuko">Zuko</option>
+                <option value="Katara">Katara</option>
+                <option value="Aang">Aang</option>
+                <option value="Toph">Toph</option>
+                <option value="Sokka">Sokka</option>
+            </select>
+            <button type="submit" id="boton-agregar-personaje" style="background:linear-gradient(45deg,#ffb347,#ffcc33);color:#222;">Agregar personaje</button>
+        </form>
     </section>
 
     <section id="seleccionar-ataque" class="container">
