@@ -1,3 +1,7 @@
+import './cart.js';
+import './products.js';
+import { products } from './products.js';
+
 const shopContent = document.getElementById("shopContent");
 const cart = []; //este es el carrito
 

@@ -1,3 +1,5 @@
+import { formatPrice } from './utils.js';
+
 // Obtener elementos del DOM
 const modalContainer = document.getElementById("modal-container");
 const modalOverlay = document.getElementById("modal-overlay");
@@ -28,7 +30,7 @@ function displayCart() {
   });
 
   const modalTitle = document.createElement("div");
-  modalTitle.innerText = "Cart";
+  modalTitle.innerText = "Carrito";
   modalTitle.className = "modal-title";
   modalHeader.append(modalTitle);
 
@@ -50,7 +52,7 @@ function displayCart() {
             <span class="quantity-input">${product.quanty}</span>
             <span class="quantity-btn-increase">+</span>
           </div>
-          <div class="price">${product.price * product.quanty} $</div>
+          <div class="price">${formatPrice(product.price * product.quanty)}</div>
           <div class="delete-product">❌</div>
         </div>
       `;
@@ -85,15 +87,47 @@ function displayCart() {
     const modalFooter = document.createElement("div");
     modalFooter.className = "modal-footer";
     modalFooter.innerHTML = `
-      <div class="total-price">Total: ${total}</div>
+      <div class="total-price">Total: ${formatPrice(total)}</div>
+      <button id="checkout-btn">Confirmar compra</button>
+      <div id="button-checkout"></div>
     `;
     modalContainer.append(modalFooter);
+
+    const checkoutBtn = modalFooter.querySelector("#checkout-btn");
+    checkoutBtn.addEventListener("click", async () => {
+      try {
+        const response = await fetch(`/create_preference`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: window.cart.map((product) => ({
+              title: product.productName,
+              quantity: product.quanty,
+              unit_price: product.price
+            }))
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Error en la creación de la preferencia");
+        }
+
+        const data = await response.json();
+        console.log("Preferencia creada:", data);
+
+        // Redirigir a MercadoPago
+        window.location.href = data.preference_url;
+      } catch (err) {
+        console.error("Error al procesar el checkout:", err);
+        alert("Hubo un error al confirmar la compra.");
+      }
+    });
   } else {
     const modalText = document.createElement("h2");
     modalText.className = "modal-body";
     modalText.innerText = "Your cart is empty";
     modalContainer.append(modalText);
-  }
+  }  
 }
 
 // Función para eliminar productos del carrito
