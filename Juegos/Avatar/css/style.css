@@ -34,6 +34,7 @@ h1 {
     color: #ffe680;
     background: linear-gradient(90deg, #ff4500, #1e90ff, #3cb371, #f0e68c);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-size: 3rem;
     margin: 1rem 0;
@@ -165,7 +166,7 @@ label:hover {
     box-shadow: 0 4px 16px rgba(30,144,255,0.25);
     border-color: #ffe680;
 }
-}
+
 
 /* === RESPONSIVE DESIGN === */
 @media (max-width: 600px) {
