@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-        <title>Document</title>
+        <title>E-Commerce</title>
     </head>
     <body>
         <!--shop content-->
@@ -24,31 +24,9 @@
         <div id="walletBrick_container"></div>
 
         <!-- Scripts -->
-        <!-- Al final de index.html -->
-    <script src="js/products.js"></script>
-    <script src="js/cart.js"></script>
-    <script src="js/index.js"></script>
-    <script src="https://sdk.mercadopago.com/js/v2"></script>
-    <script>
-        // Configurar clave publica
-        const publicKey = "APP_USR-b36bf104-feac-4df0-9e20-5085707c1fed";
-        // configuracion de la preferencia de ID que se recibe del backend
-        const preferenceId = preference_id;
-
-        // Inicializa o SDK do Mercado Pago
-        const mp = new MercadoPago(publicKey);
-
-        // boton de pago
-        const bricksBuilder = mp.bricks();
-        const renderWalletBrick = async (bricksBuilder) => {
-            await bricksBuilder.create("wallet", "walletBrick_container", {
-                initialization: {
-                    preferenceId: preferenceId,
-                }
-            });
-        };
-
-        renderWalletBrick(bricksBuilder);
-    </script>
+        <!-- Se carga solo el index ya que se setea de tipo module -->
+        <!-- Dentro del index se importan los demás archivos js -->
+        <script type="module" src="js/index.js"></script>
+        <script src="https://sdk.mercadopago.com/js/v2"></script>
     </body>
 </html>
