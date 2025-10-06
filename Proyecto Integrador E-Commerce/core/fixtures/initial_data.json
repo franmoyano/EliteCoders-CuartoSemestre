@@ -1,0 +1,31 @@
+[
+{
+    "model": "core.categoria",
+    "pk": 3,
+    "fields": {
+        "nombre": "Programación"
+    }
+},
+{
+    "model": "core.instructor",
+    "pk": 3,
+    "fields": {
+        "nombre": "Miguel Ángel García",
+        "bio": "Desarrollador experto"
+    }
+},
+{
+    "model": "core.curso",
+    "pk": 3,
+    "fields": {
+        "titulo": "Programación Java",
+        "descripcion": "Curso de programación Java desde cero",
+        "precio": "99500.00",
+        "categoria": 3,
+        "instructor": 3,
+        "imagen_portada": "",
+        "publicado": true,
+        "fecha_creacion": "2025-10-06T23:04:44.304Z"
+    }
+}
+]

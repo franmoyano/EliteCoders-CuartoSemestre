@@ -1,6 +1,0 @@
-- GitFlow: usar ramas main, develop y feature branches por issue.
-- Issues por historia de usuario con criterios de aceptación claros.
-- Pull Requests obligatorios con code review de al menos 1 compañero de la misma sección.
-- Daily (15 min) → Avances, bloqueos, plan de hoy.
-- Review al final de cada sprint con demo.
-- Prioridades iniciales: repositorio, base de datos, API de autenticación y CRUD básico, prototipo de pantallas.
