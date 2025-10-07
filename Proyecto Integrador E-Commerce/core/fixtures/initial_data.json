@@ -7,11 +7,26 @@
     }
 },
 {
+    "model": "core.categoria",
+    "pk": 4,
+    "fields": {
+        "nombre": "Marketing Digital"
+    }
+},
+{
     "model": "core.instructor",
     "pk": 3,
     "fields": {
         "nombre": "Miguel Ángel García",
         "bio": "Desarrollador experto"
+    }
+},
+{
+    "model": "core.instructor",
+    "pk": 4,
+    "fields": {
+        "nombre": "Lucía Fernandez",
+        "bio": "Especialista en Marketing Digital y Redes Sociales con más de 10 años de experiencia."
     }
 },
 {
@@ -26,6 +41,94 @@
         "imagen_portada": "",
         "publicado": true,
         "fecha_creacion": "2025-10-06T23:04:44.304Z"
+    }
+},
+{
+    "model": "core.curso",
+    "pk": 4,
+    "fields": {
+        "titulo": "Marketing en Redes Sociales 2025",
+        "descripcion": "Aprende a gestionar y potenciar marcas en Instagram, Facebook y TikTok desde cero.",
+        "precio": "75000.00",
+        "categoria": 4,
+        "instructor": 4,
+        "imagen_portada": "",
+        "publicado": true,
+        "fecha_creacion": "2025-10-07T13:30:00.000Z"
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 1,
+    "fields": {
+        "curso": 4,
+        "titulo": "Lección 1: Fundamentos de Instagram y TikTok",
+        "contenido_texto": "En esta lección cubriremos los algoritmos y las mejores prácticas para empezar en ambas plataformas.",
+        "video_url": null,
+        "material_adjunto": "",
+        "orden": 1
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 2,
+    "fields": {
+        "curso": 4,
+        "titulo": "Lección 2: Creando Contenido Atractivo",
+        "contenido_texto": "Estrategias para diseñar publicaciones, reels y videos que capturen la atención de tu audiencia.",
+        "video_url": "https://example.com/video/contenido.mp4",
+        "material_adjunto": "",
+        "orden": 2
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 3,
+    "fields": {
+        "curso": 4,
+        "titulo": "Lección 3: Métricas y Análisis de Resultados",
+        "contenido_texto": "Aprende a leer las estadísticas para entender qué funciona y optimizar tu estrategia.",
+        "video_url": null,
+        "material_adjunto": "lecciones_materiales/guia_metricas.pdf",
+        "orden": 3
+    }
+},
+{
+    "model": "core.curso",
+    "pk": 5,
+    "fields": {
+        "titulo": "SEO para Principiantes: Posiciona en Google",
+        "descripcion": "Entiende los conceptos clave del SEO para que tu sitio web aparezca en los primeros lugares de búsqueda.",
+        "precio": "82500.00",
+        "categoria": 4,
+        "instructor": 4,
+        "imagen_portada": "",
+        "publicado": true,
+        "fecha_creacion": "2025-10-07T13:45:00.000Z"
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 4,
+    "fields": {
+        "curso": 5,
+        "titulo": "Capítulo 1: ¿Qué es el SEO y por qué es importante?",
+        "contenido_texto": "Introducción a los motores de búsqueda y al valor de aparecer en la primera página.",
+        "video_url": null,
+        "material_adjunto": "",
+        "orden": 1
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 5,
+    "fields": {
+        "curso": 5,
+        "titulo": "Capítulo 2: Búsqueda de Palabras Clave (Keywords)",
+        "contenido_texto": "Herramientas y técnicas para encontrar las palabras que tus clientes potenciales están buscando.",
+        "video_url": "https://example.com/video/keywords.mp4",
+        "material_adjunto": "",
+        "orden": 2
     }
 }
 ]
