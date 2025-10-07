@@ -96,6 +96,12 @@ python manage.py createsuperuser
 ```
 Sigue las instrucciones en pantalla para crear tu usuario.
 
+### 8. Crea un usuario "común"
+Para crear un usuario común, se debe estar logueado como superusuario (admin - Paso 7).
+Luego dirigirse a la siguiente URL: http://127.0.0.1:8000/api/v1/auth/users/
+
+Veremos un formulario al final de la página donde cargaremos los datos de este nuevo usuario.
+
 ---
 
 ## Ejecutar el Proyecto
