@@ -1,3 +1,107 @@
+## Estructura del proyecto 
+
+### Banckend
+backend/
+├── manage.py                  # Script principal para comandos Django.
+├── ecommerce/                 # Carpeta del proyecto principal (nombre configurable).
+│   ├── __init__.py
+│   ├── asgi.py                # Para aplicaciones asíncronas (WebSockets si lo necesitas).
+│   ├── settings.py            # Configuraciones: apps instaladas, DB, middleware, etc.
+│   ├── urls.py                # Rutas principales del proyecto.
+│   └── wsgi.py                # Para deployment en servidores como Gunicorn.
+├── core/                      # App para configuraciones generales o utilidades.
+│   ├── migrations/            # Migraciones de la DB.
+│   ├── __init__.py
+│   ├── admin.py               # Panel admin de Django.
+│   ├── apps.py
+│   ├── models.py              # Modelos generales (e.g., configuraciones).
+│   ├── tests.py               # Tests unitarios.
+│   └── views.py               # Vistas generales.
+├── users/                     # App para manejo de usuarios (autenticación, perfiles).
+│   ├── migrations/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py              # Modelos como UserProfile, Address.
+│   ├── serializers.py         # Si usas Django REST Framework para API.
+│   ├── tests.py
+│   ├── urls.py                # Rutas específicas de la app (e.g., /api/users/).
+│   └── views.py               # Vistas para login, registro, etc.
+├── products/                  # App para productos (catálogo).
+│   ├── migrations/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py              # Modelos como Product, Category, Image.
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py               # Vistas/API para listar productos, detalles.
+├── cart/                      # App para carrito de compras.
+│   ├── migrations/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py              # Modelos como Cart, CartItem.
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py               # Lógica para agregar/quitar items.
+├── orders/                    # App para órdenes y pagos.
+│   ├── migrations/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py              # Modelos como Order, OrderItem, Payment.
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py               # Procesamiento de checkout.
+├── static/                    # Archivos estáticos globales (CSS, JS, images) recolectados por Django.
+├── media/                     # Archivos subidos por usuarios (e.g., imágenes de productos).
+
+## Frontend
+frontend/
+├── public/                    # Archivos públicos (no procesados por webpack).
+│   ├── index.html             # Plantilla principal.
+│   ├── favicon.ico
+│   └── robots.txt
+├── src/                       # Código fuente principal.
+│   ├── assets/                # Imágenes, fonts, etc.
+│   │   ├── images/            # Logos, icons, product placeholders.
+│   │   └── styles/            # CSS global o SCSS.
+│   ├── components/            # Componentes reutilizables.
+│   │   ├── Header.vue         # Barra de navegación.
+│   │   ├── Footer.vue         # Pie de página.
+│   │   ├── ProductCard.vue    # Tarjeta de producto.
+│   │   ├── CartItem.vue       # Item en el carrito.
+│   │   └── LoadingSpinner.vue # Componente de carga.
+│   ├── views/                 # Vistas/páginas principales (rutas).
+│   │   ├── Home.vue           # Página de inicio.
+│   │   ├── ProductList.vue    # Lista de productos.
+│   │   ├── ProductDetail.vue  # Detalle de producto.
+│   │   ├── Cart.vue           # Carrito de compras.
+│   │   ├── Checkout.vue       # Proceso de pago.
+│   │   ├── Login.vue          # Página de login.
+│   │   └── Profile.vue        # Perfil de usuario.
+│   ├── router/                # Configuración de rutas (Vue Router).
+│   │   └── index.js           # Define rutas como /products, /cart.
+│   ├── store/                 # Estado global (Vuex o Pinia).
+│   │   ├── index.js           # Store principal.
+│   │   ├── modules/           # Módulos como cart.js, products.js.
+│   │   │   ├── cart.js
+│   │   │   └── products.js
+│   ├── services/              # Servicios para API calls (e.g., Axios).
+│   │   └── api.js             # Configura base URL para backend (e.g., http://localhost:8000/api/).
+│   ├── App.vue                # Componente raíz.
+│   └── main.js                # Entry point: monta la app, router, store.
+├── node_modules/              # Dependencias (ignorado en git).
+├── babel.config.js            # Config para transpilación.
+├── package.json               # Dependencias (Vue, Vue Router, Vuex/Pinia, Axios, etc.).
+├── package-lock.json          # Lockfile para versiones.
+
+--- 
+
 - GitFlow: usar ramas main, develop y feature branches por issue.
 - Issues por historia de usuario con criterios de aceptación claros.
 - Pull Requests obligatorios con code review de al menos 1 compañero de la misma sección.
