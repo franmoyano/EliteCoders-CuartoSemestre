@@ -1,0 +1,74 @@
+# Python/Django (Backend)
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.db  # Ignora archivos de base de datos locales (por si hay dumps o temporales)
+*.sqlite3  # Aunque uses MySQL, ignora si hay pruebas con SQLite
+*.sql  # Ignora dumps o scripts SQL para MySQL
+media/
+*.log
+*.pid
+*.seed
+*.pot
+*.mo
+*.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Django static and media (ajustado a la estructura)
+backend/staticfiles/
+backend/media/
+
+# Vue.js (Frontend)
+frontend/node_modules/
+frontend/dist/
+frontend/.cache/
+frontend/.temp/
+*.log
+npm-debug.log*
+yarn-error.log
+yarn.lock  # Si usas npm, ignora package-lock.json en su lugar; ajusta según tu gestor
+package-lock.json
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*~
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+
+# Testing and Coverage
+.coverage
+coverage/
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+*.cover
+*.py,cover
+
+# Build and Deployment
+build/
+dist/
+*.egg-info/
+
+# Miscellaneous
+*.bak
+*.gho
+*.orig
+*.tmp
+*.backup
