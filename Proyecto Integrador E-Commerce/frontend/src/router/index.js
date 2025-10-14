@@ -1,24 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../pages/Home.vue'
-import Courses from '../pages/Courses.vue'
-import CourseDetail from '../pages/CourseDetail.vue'
-import Cart from '@/pages/Cart.vue'
-import Login from '@/pages/Login.vue'
-import Register from '@/pages/Register.vue'
-import NotFound from '@/pages/NotFound.vue'
 
 const routes = [
-  { path: '/', name: 'home', component: Home },
-  { path: '/courses', name: 'courses', component: Courses },
-  { path: '/courses/:id', name: 'course-detail', component: CourseDetail, props: true },
-  { path: '/cart', name: 'cart', component: Cart },
-  { path: '/login', name: 'login', component: Login },
-  { path: '/register', name: 'register', component: Register },
-  { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
+  { path: '/', component: () => import('@/pages/Home.vue') },
+  { path: '/courses', component: () => import('@/pages/Courses.vue') },
+  { path: '/courses/:id', component: () => import('@/pages/CourseDetail.vue') },
+  { path: '/cart', component: () => import('@/pages/Cart.vue') },
+  { path: '/login', component: () => import('@/pages/Login.vue') },
+  { path: '/register', component: () => import('@/pages/Register.vue') },
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('@/pages/NotFound.vue') },
 ]
 
-export default createRouter({
+export const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior() { return { top: 0 } }
+  scrollBehavior() {
+    return { top: 0 }
+  }
 })
