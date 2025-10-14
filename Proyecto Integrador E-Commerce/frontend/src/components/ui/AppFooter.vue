@@ -1,7 +1,14 @@
 <template>
-  <footer class="mt-10 border-t">
-    <div class="container mx-auto px-4 py-6 text-sm text-gray-500">
-      © {{ new Date().getFullYear() }} Academia XYZ — Todos los derechos reservados
-    </div>
+  <footer class="ftr">
+    <small>© {{ new Date().getFullYear() }} Mi E‑Commerce</small>
   </footer>
 </template>
+
+<style scoped>
+.ftr {
+  border-top: 1px solid #ececec;
+  text-align: center;
+  padding: 1rem;
+  color: #555;
+}
+</style>
