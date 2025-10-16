@@ -119,7 +119,7 @@ git clone https://github.com/PowerSystem2024/EliteCoders-CuartoSemestre.git
 cd EliteCoders-CuartoSemestre
 ```
 
-### 2. Crea y activa un Entorno Virtual
+### 2. Crea y activa un Entorno Virtual (en la ruta raíz)
 
 Es una buena práctica aislar las dependencias del proyecto en un entorno virtual.
 
@@ -184,6 +184,7 @@ python manage.py migrate
 ```
 
 ### 6. Cargar Datos Iniciales
+#### IMPORTANTE: ejecutar desde carpeta /backend
 
 Este proyecto incluye un archivo de datos iniciales (fixtures) para poblar la base de datos con categorías, instructores y cursos de ejemplo, asegurando que todos los desarrolladores comiencen con una base de datos consistente.
 
@@ -192,6 +193,7 @@ python manage.py loaddata initial_data.json
 ```
 
 ### 7. Crea un Superusuario
+#### IMPORTANTE: ejecutar desde carpeta /backend
 
 Necesitarás un usuario administrador para acceder al panel de Django (`/admin`).
 
@@ -208,7 +210,8 @@ Veremos un formulario al final de la página donde cargaremos los datos de este 
 
 ---
 
-## Ejecutar el Proyecto
+## 9. Ejecutar el Proyecto
+#### IMPORTANTE: ejecutar desde carpeta /backend
 
 Una vez completada la instalación, puedes iniciar el servidor de desarrollo de Django.
 
