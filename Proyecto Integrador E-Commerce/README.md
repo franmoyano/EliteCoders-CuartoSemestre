@@ -189,7 +189,7 @@ python manage.py migrate
 Este proyecto incluye un archivo de datos iniciales (fixtures) para poblar la base de datos con categorías, instructores y cursos de ejemplo, asegurando que todos los desarrolladores comiencen con una base de datos consistente.
 
 ```bash
-python manage.py loaddata initial_data.json
+python manage.py loaddata fixtures/initial_data.json
 ```
 
 ### 7. Crea un Superusuario
