@@ -1,16 +1,17 @@
 package utn.tienda_libros.servicio;
 
 import utn.tienda_libros.modelo.Libro;
-
 import java.util.List;
 
 public interface ILibroServicio {
 
-    List<Libro> listar();
+    public List<Libro> listarLibros();
 
-    Libro buscarPorId(Integer id);
+    public Libro buscarLibroPorId(Integer idLibro);
 
-    void guardar(Libro libro);
+    public void guardarLibro(Libro libro);
 
-    void eliminar(Libro libro);
+    public void eliminarLibro(Libro libro);
+
+    public Libro buscarPorNombreYAutor(String nombreLibro, String autor);
 }

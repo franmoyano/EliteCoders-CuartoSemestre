@@ -4,32 +4,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import utn.tienda_libros.modelo.Libro;
 import utn.tienda_libros.repositorio.LibroRepositorio;
-
 import java.util.List;
 
 @Service
 public class LibroServicio implements ILibroServicio {
 
     @Autowired
-    LibroRepositorio repositorio;
+    private LibroRepositorio repositorio;
 
     @Override
-    public List<Libro> listar() {
-        return repositorio.findAll();
+    public List<Libro> listarLibros() { return repositorio.findAll();}
+
+
+    @Override
+    public Libro buscarLibroPorId(Integer idLibro) {
+        Libro libro = repositorio.findById(idLibro).orElse(null);
+        return libro;
     }
 
     @Override
-    public Libro buscarPorId(Integer id) {
-        return repositorio.findById(id).orElse(null);
-    }
-
-    @Override
-    public void guardar(Libro libro) {
+    public void guardarLibro(Libro libro) {
         repositorio.save(libro);
     }
 
     @Override
-    public void eliminar(Libro libro) {
+    public void eliminarLibro(Libro libro) {
         repositorio.delete(libro);
+    }
+
+    @Override
+    public Libro buscarPorNombreYAutor(String nombreLibro, String autor) {
+        return repositorio.findByNombreLibroIgnoreCaseAndAutorIgnoreCase(nombreLibro, autor);
     }
 }
