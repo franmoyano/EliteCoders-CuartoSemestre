@@ -21,19 +21,21 @@ class Personaje {
 // Clase que gestiona todos los personajes del juego
 class GestorPersonajes {
     constructor() {
-        // Aquí guardamos todos los personajes como objetos individuales
+        // Detecta automáticamente la ruta base donde está el archivo avatar.html
+        this.basePath = `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '')}/public/images/`;
+
+        // Inicializamos el array y cargamos los personajes base
         this.personajes = [];
         this.inicializarPersonajes();
     }
 
     // Inicializa los personajes base del juego
     inicializarPersonajes() {
-        // Cada personaje es una entidad propia
         this.personajes = [
-            new Personaje("Zuko", "./public/images/zuko.webp"),
-            new Personaje("Katara", "./public/images/katara.png"),
-            new Personaje("Aang", "./public/images/aang.png"),
-            new Personaje("Toph", "./public/images/toph.webp")
+            new Personaje("Zuko", `${this.basePath}zuko.webp`),
+            new Personaje("Katara", `${this.basePath}katara.png`),
+            new Personaje("Aang", `${this.basePath}aang.png`),
+            new Personaje("Toph", `${this.basePath}toph.webp`)
         ];
     }
 
@@ -311,34 +313,42 @@ window.addEventListener("load", () => {
     }
 
     // --- Lógica para agregar un nuevo personaje desde el formulario simplificado ---
-    if (formNuevoPersonaje) {
-        // Diccionario de imágenes disponibles
-        const imagenesPorNombre = {
-            "Zuko": "./public/images/zuko.webp",
-            "Katara": "./public/images/katara.png",
-            "Aang": "./public/images/aang.png",
-            "Toph": "./public/images/toph.webp",
-            "Sokka": "./public/images/sokka.webp"
-        };
-        formNuevoPersonaje.addEventListener("submit", function (e) {
-            e.preventDefault();
-            const selectNombre = document.getElementById("select-nombre-personaje");
-            const nombre = selectNombre.value;
-            if (!nombre || !imagenesPorNombre[nombre]) {
-                alert("Selecciona un personaje válido.");
-                return;
-            }
-            // Validación: ¿ya existe el personaje en la interfaz?
-            const nombresActuales = gestorPersonajes.obtenerNombresPersonajes().map(n => n.toLowerCase());
-            if (nombresActuales.includes(nombre.toLowerCase())) {
-                alert("Este personaje ya se encuentra desbloqueado.");
-                return;
-            }
-            // Usamos la función POO para agregar el personaje con la imagen correspondiente
-            agregarNuevoPersonaje(nombre, imagenesPorNombre[nombre]);
-            // Limpiamos el formulario
-            selectNombre.value = "";
-            formNuevoPersonaje.style.display = "none";
-        });
-    }
+if (formNuevoPersonaje) {
+    // Construimos la ruta base automáticamente
+    const basePath = `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '')}/public/images/`;
+
+    // Diccionario de imágenes disponibles con ruta dinámica
+    const imagenesPorNombre = {
+        "Zuko": `${basePath}zuko.webp`,
+        "Katara": `${basePath}katara.png`,
+        "Aang": `${basePath}aang.png`,
+        "Toph": `${basePath}toph.webp`,
+        "Sokka": `${basePath}sokka.webp`
+    };
+
+    formNuevoPersonaje.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const selectNombre = document.getElementById("select-nombre-personaje");
+        const nombre = selectNombre.value;
+
+        if (!nombre || !imagenesPorNombre[nombre]) {
+            alert("Selecciona un personaje válido.");
+            return;
+        }
+
+        // Validación: ¿ya existe el personaje en la interfaz?
+        const nombresActuales = gestorPersonajes.obtenerNombresPersonajes().map(n => n.toLowerCase());
+        if (nombresActuales.includes(nombre.toLowerCase())) {
+            alert("Este personaje ya se encuentra desbloqueado.");
+            return;
+        }
+
+        // Usamos la función POO para agregar el personaje con la imagen correspondiente
+        agregarNuevoPersonaje(nombre, imagenesPorNombre[nombre]);
+
+        // Limpiamos el formulario
+        selectNombre.value = "";
+        formNuevoPersonaje.style.display = "none";
+    });
+}
 });

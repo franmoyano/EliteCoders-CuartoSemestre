@@ -1,10 +1,10 @@
 package utn.tienda_libros;
 
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.ConfigurableApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import utn.tienda_libros.vista.LibroForm;
 
 import java.awt.EventQueue;
 
@@ -12,18 +12,18 @@ import java.awt.EventQueue;
 public class TiendaLibrosApplication {
 
 	public static void main(String[] args) {
-		
-        ConfigurableApplicationContext= contextoSpring = new SpringApplicationBuilder(TiendaLibrosApplication.class)
-                .headless(false)
-                .web(WebApplicationType.NONE)
-                .run(args);
+
+        ConfigurableApplicationContext contextoSpring =
+                new SpringApplicationBuilder(TiendaLibrosApplication.class)
+                        .headless(false)
+                        .web(WebApplicationType.NONE)
+                        .run(args);
+
         // Ejecutamos el codigo para cargar el formulario
-        EventQueve.invokeLater(() -> { // Metodo labda 
+        EventQueue.invokeLater(() -> { // Metodo labda
             //Obtenemos el objeto from a traves del spring
-            LibroFrom libroFrom= contextoSpring.getBean(LibroFrom.class);
-            libroFrom.setVisible(true);
-        })
-                
-                
-                
+            LibroForm libroForm = contextoSpring.getBean(LibroForm.class);
+            libroForm.setVisible(true);
+        });
+    }
  }
