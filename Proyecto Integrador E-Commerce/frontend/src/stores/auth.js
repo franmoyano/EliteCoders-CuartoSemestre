@@ -3,6 +3,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import axios from 'axios'; // Necesitarás axios
+import api from '@/api/axiosInstance' // our api instance used across the app
 
 export const useAuthStore = defineStore('auth', () => {
   // --- Estado ---
@@ -19,8 +20,8 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(username, password) {
     isLoading.value = true;
     try {
-      // 1. Pedimos los tokens a Djoser
-      const response = await axios.post('/api/v1/auth/jwt/create/', {
+      // 1. Pedimos los tokens a Djoser usando el `api` instance
+      const response = await api.post('auth/jwt/create/', {
         username: username,
         password: password
       });
@@ -32,7 +33,9 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('authToken', accessToken);
 
       // 3. Configuramos axios para que envíe este token en *todas* las peticiones futuras
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+  axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+  // Also set the header for our api instance so modules using it send the token
+  api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
 
       // 4. Obtenemos los datos del usuario
       await fetchUser();
@@ -53,7 +56,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return; // No hacer nada si no hay token
 
     try {
-      const response = await axios.get('/api/v1/auth/users/me/');
+  const response = await api.get('auth/users/me/');
       user.value = response.data;
       localStorage.setItem('authUser', JSON.stringify(response.data));
     } catch (error) {
@@ -75,7 +78,8 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('authUser');
 
     // Quitamos el header de autenticación de axios
-    delete axios.defaults.headers.common['Authorization'];
+  delete axios.defaults.headers.common['Authorization'];
+  delete api.defaults.headers.common['Authorization'];
   }
 
   // Exponemos el estado y las acciones

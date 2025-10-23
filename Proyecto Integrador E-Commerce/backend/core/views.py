@@ -100,7 +100,8 @@ class CarritoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Carrito.objects.filter(usuario=self.request.user, activo=True)
+        # The model uses `completado` to mark finished carts; return active (not completed) carts
+        return Carrito.objects.filter(usuario=self.request.user, completado=False)
 
     def list(self, request, *args, **kwargs):
         """

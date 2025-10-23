@@ -138,7 +138,7 @@ class Pedido(models.Model):
                 precio_compra=item.curso.precio
             )
         carrito.vaciar()
-        carrito.activo = False
+        carrito.completado = True
         carrito.save()
 
 

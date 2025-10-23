@@ -1,6 +1,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import { getCursoById } from '../api/cursos'
 import { getCarrito, agregarCursoCarrito } from '../api/carrito'
 
@@ -9,6 +10,7 @@ const router = useRouter()
 
 const course = ref(null)
 const carrito = ref(null)
+const authStore = useAuthStore()
 
 // 🔹 Cargar curso
 onMounted(async () => {
@@ -34,6 +36,11 @@ const cargarCarrito = async () => {
 
 // 🔹 Comprar directamente
 function comprar() {
+  if (!authStore.token) {
+    // If not logged, redirect to login
+    router.push({ path: '/login', query: { next: `/checkout?course=${course.value?.id}` } })
+    return
+  }
   if (course.value) {
     router.push(`/checkout?course=${course.value.id}`)
   }
@@ -41,6 +48,11 @@ function comprar() {
 
 // 🔹 Agregar curso al carrito
 async function agregarAlCarrito() {
+  if (!authStore.token) {
+    router.push({ path: '/login', query: { next: route.fullPath } })
+    return
+  }
+
   if (!course.value || !carrito.value) return
 
   try {

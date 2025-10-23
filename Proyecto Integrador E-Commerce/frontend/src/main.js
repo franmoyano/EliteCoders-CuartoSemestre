@@ -5,6 +5,7 @@ import { createPinia } from 'pinia' // Importar Pinia
 import App from './App.vue'
 import { router } from './router'
 import axios from 'axios'
+import api from '@/api/axiosInstance'
 import { useAuthStore } from './stores/auth' // Importar el store
 import '@/assets/styles.css' // Import global styles
 
@@ -43,6 +44,8 @@ const authStore = useAuthStore();
 const token = localStorage.getItem('authToken');
 if (token) {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  // make sure our custom api instance also carries the token
+  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   // Intentamos cargar los datos del usuario al recargar la página
   authStore.fetchUser().finally(() => {
     app.mount('#app'); // Montamos la app *después* de verificar el usuario
@@ -50,3 +53,16 @@ if (token) {
 } else {
   app.mount('#app'); // Montamos la app directamente si no hay token
 }
+
+// Add interceptor for the api instance too so calls using `api` handle 401s
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const authStore = useAuthStore();
+      authStore.logout();
+      router.push('/login');
+    }
+    return Promise.reject(error);
+  }
+);
