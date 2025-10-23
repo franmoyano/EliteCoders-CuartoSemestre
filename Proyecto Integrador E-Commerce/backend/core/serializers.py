@@ -1,6 +1,6 @@
 # core/serializers.py
 from rest_framework import serializers
-from .models import Categoria, Curso, Leccion, Instructor, Inscripcion
+from .models import Categoria, Curso, Leccion, Instructor, Inscripcion, Carrito, ItemCarrito, Pedido, ItemPedido
 
 
 class CategoriaSerializer(serializers.ModelSerializer):
@@ -93,3 +93,37 @@ class EmptySerializer(serializers.Serializer):
     Un serializer vacío para acciones que no necesitan un cuerpo en la petición.
     """
     pass
+
+class ItemCarritoSerializer(serializers.ModelSerializer):
+    curso_titulo = serializers.ReadOnlyField(source='curso.titulo')
+    curso_precio = serializers.ReadOnlyField(source='curso.precio')
+
+    class Meta:
+        model = ItemCarrito
+        fields = ['id', 'curso', 'curso_titulo', 'curso_precio', 'cantidad', 'subtotal']
+
+
+class CarritoSerializer(serializers.ModelSerializer):
+    items = ItemCarritoSerializer(many=True, read_only=True)
+    total = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Carrito
+        fields = ['id', 'usuario', 'completado', 'items', 'total']
+
+
+class ItemPedidoSerializer(serializers.ModelSerializer):
+    curso_titulo = serializers.ReadOnlyField(source='curso.titulo')
+
+    class Meta:
+        model = ItemPedido
+        fields = ['curso_titulo', 'precio_compra']
+
+
+class PedidoSerializer(serializers.ModelSerializer):
+    items = ItemPedidoSerializer(many=True, read_only=True)
+    total = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Pedido
+        fields = ['id', 'usuario', 'fecha_pedido', 'completado', 'items', 'total']

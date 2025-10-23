@@ -3,10 +3,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-from .models import Categoria, Curso, Instructor, Leccion, Inscripcion
+from .models import Categoria, Curso, Instructor, Leccion, Inscripcion, ItemCarrito, Carrito, Pedido
 from .serializers import (
     CategoriaSerializer, InstructorSerializer, LeccionSerializer, EmptySerializer,
-    CursoListSerializer, CursoDetailSerializer
+    CursoListSerializer, CursoDetailSerializer, CarritoSerializer, PedidoSerializer
 )
 from .permissions import IsAdminOrReadOnly, CanViewLessons
 
@@ -91,3 +91,87 @@ class MisCursosView(generics.ListAPIView):
     def get_queryset(self):
         usuario_actual = self.request.user
         return Curso.objects.filter(inscritos__usuario=usuario_actual)
+
+class CarritoViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para gestionar el carrito del usuario autenticado.
+    """
+    serializer_class = CarritoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Carrito.objects.filter(usuario=self.request.user, activo=True)
+
+    def list(self, request, *args, **kwargs):
+        """
+        Devuelve el carrito activo del usuario o lo crea si no existe.
+        """
+        carrito, created = Carrito.objects.get_or_create(
+            usuario=request.user,
+            completado=False
+        )
+        serializer = self.get_serializer(carrito)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], url_path='agregar')
+    def agregar(self, request, pk=None):
+        """
+        Agrega un curso al carrito (o incrementa si ya existe).
+        """
+        carrito = self.get_object()
+        curso_id = request.data.get('curso_id')
+
+        if not curso_id:
+            return Response({'error': 'Se requiere curso_id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        item, creado = ItemCarrito.objects.get_or_create(
+            carrito=carrito,
+            curso_id=curso_id,
+            defaults={'cantidad': 1}
+        )
+        if not creado:
+            item.cantidad += 1
+            item.save()
+
+        return Response({'status': 'Curso agregado al carrito'}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'], url_path='quitar')
+    def quitar(self, request, pk=None):
+        """
+        Quita un curso del carrito.
+        """
+        carrito = self.get_object()
+        curso_id = request.data.get('curso_id')
+
+        try:
+            item = ItemCarrito.objects.get(carrito=carrito, curso_id=curso_id)
+            item.delete()
+            return Response({'status': 'Curso quitado del carrito'}, status=status.HTTP_200_OK)
+        except ItemCarrito.DoesNotExist:
+            return Response({'error': 'El curso no está en el carrito'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=['post'], url_path='vaciar')
+    def vaciar(self, request, pk=None):
+        carrito = self.get_object()
+        carrito.vaciar()
+        return Response({'status': 'Carrito vaciado'}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'], url_path='checkout')
+    def checkout(self, request, pk=None):
+        """
+        Convierte el carrito en un pedido.
+        """
+        carrito = self.get_object()
+        if not carrito.items.exists():
+            return Response({'error': 'El carrito está vacío'}, status=status.HTTP_400_BAD_REQUEST)
+
+        pedido = Pedido.objects.create(usuario=request.user)
+        pedido.generar_desde_carrito(carrito)
+
+        # Opcional: inscribir al usuario automáticamente en los cursos comprados
+        for item in pedido.items.all():
+            from .models import Inscripcion
+            Inscripcion.objects.get_or_create(usuario=request.user, curso=item.curso)
+
+        serializer = PedidoSerializer(pedido)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -2,25 +2,54 @@
 import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { getCursoById } from '../api/cursos'
+import { getCarrito, agregarCursoCarrito } from '../api/carrito'
 
 const route = useRoute()
 const router = useRouter()
 
 const course = ref(null)
+const carrito = ref(null)
 
+// 🔹 Cargar curso
 onMounted(async () => {
   const courseId = route.params.id
   try {
     const response = await getCursoById(courseId)
     course.value = response.data
+    await cargarCarrito() // también cargamos el carrito al montar
   } catch (error) {
     console.error("Error al cargar el curso:", error)
   }
 })
 
+// 🔹 Cargar carrito
+const cargarCarrito = async () => {
+  try {
+    const { data } = await getCarrito()
+    carrito.value = data
+  } catch (error) {
+    console.error("Error al cargar el carrito:", error)
+  }
+}
+
+// 🔹 Comprar directamente
 function comprar() {
   if (course.value) {
     router.push(`/checkout?course=${course.value.id}`)
+  }
+}
+
+// 🔹 Agregar curso al carrito
+async function agregarAlCarrito() {
+  if (!course.value || !carrito.value) return
+
+  try {
+    await agregarCursoCarrito(carrito.value.id, course.value.id)
+    await cargarCarrito() // refrescar el carrito
+    alert(`Curso "${course.value.titulo}" agregado al carrito.`)
+  } catch (error) {
+    console.error("Error al agregar curso al carrito:", error)
+    alert("No se pudo agregar el curso al carrito.")
   }
 }
 </script>
@@ -36,6 +65,9 @@ function comprar() {
         <div class="list-pill">Preguntas Frecuentes</div>
         <div class="list-pill"><strong>${{ course.precio }}</strong></div>
         <button class="btn block" style="margin-top:1rem" @click="comprar">COMPRAR</button>
+        <button class="btn block" style="margin-top:0.5rem" @click="agregarAlCarrito">
+          AGREGAR AL CARRITO
+        </button>
       </div>
       <aside class="card">
         <h2 class="h2">Resumen del curso</h2>
