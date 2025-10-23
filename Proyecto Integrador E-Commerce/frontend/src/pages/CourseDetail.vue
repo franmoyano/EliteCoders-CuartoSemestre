@@ -212,11 +212,8 @@ function viewLesson(lesson, index) {
               <div 
                 v-for="(lesson, index) in courseLessons" 
                 :key="lesson.id || index"
-                class="list-pill"
-                style="cursor: pointer; transition: all 0.2s ease"
+                class="list-pill lesson-item"
                 @click="viewLesson(lesson, index)"
-                @mouseover="$event.target.style.background = 'var(--mint)'"
-                @mouseleave="$event.target.style.background = 'var(--panel)'"
               >
                 <span>
                   <strong>Lección {{ index + 1 }}:</strong> {{ lesson.titulo || lesson.title }}

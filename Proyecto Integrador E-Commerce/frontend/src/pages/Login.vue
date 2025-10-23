@@ -11,14 +11,14 @@
 
         <form @submit.prevent="handleLogin" class="form-grid" style="grid-template-columns: 1fr; gap: 1.5rem">
           <div class="field">
-            <label for="username" class="label">Usuario o Email</label>
+            <label for="username" class="label">Usuario</label>
             <input
               type="text"
               id="username"
               v-model="username"
               class="input"
               :class="{ 'input-error': usernameError }"
-              placeholder="Ingresa tu usuario o email"
+              placeholder="Ingresa tu usuario"
               required
               @blur="validateUsername"
               @input="clearUsernameError"

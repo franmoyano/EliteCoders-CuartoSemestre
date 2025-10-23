@@ -1,18 +1,15 @@
-// src/main.js
-
 import { createApp } from 'vue'
-import { createPinia } from 'pinia' // Importar Pinia
+import { createPinia } from 'pinia'
 import App from './App.vue'
 import { router } from './router'
 import axios from 'axios'
 import api from '@/api/axiosInstance'
-import { useAuthStore } from './stores/auth' // Importar el store
-import '@/assets/styles.css' // Import global styles
+import { useAuthStore } from './stores/auth'
+import '@/assets/styles.css'
 
 // --- Configuración de Axios ---
 // 1. Define tu URL base de la API (la de Django)
-axios.defaults.baseURL = 'http://127.0.0.1:8000'; // O tu URL de producción
-// --- Creación de la App ---
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
 const app = createApp(App)
 
 const pinia = createPinia();
