@@ -50,6 +50,23 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
+   * Registra un nuevo usuario usando Djoser (POST /auth/users/)
+   * Si el registro es exitoso, retorna la respuesta. No hace login automático.
+   */
+  async function register(email, username, password) {
+    isLoading.value = true
+    try {
+      const payload = { email, username, password }
+      const response = await api.post('auth/users/', payload)
+      return response
+    } catch (error) {
+      throw error
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  /**
    * Obtiene los datos del usuario (endpoint /me/ de Djoser)
    */
   async function fetchUser() {
@@ -88,6 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     isLoading,
     login,
+    register,
     fetchUser,
     logout
   };

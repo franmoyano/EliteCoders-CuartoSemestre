@@ -2,7 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.db.models import Q
 
 # =====================================================
 # CATEGORÍAS E INSTRUCTORES
@@ -80,7 +80,13 @@ class Carrito(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('usuario', 'completado')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['usuario'],
+                condition=Q(completado=False),
+                name='unique_active_cart_per_user'
+            )
+        ]
 
     def __str__(self):
         if self.usuario:

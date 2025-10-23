@@ -30,6 +30,7 @@
         {{ authStore.isLoading ? 'Cargando...' : 'Entrar' }}
       </button>
     </form>
+    <p style="margin-top:1rem">¿No tienes cuenta? <RouterLink to="/register">Crear cuenta</RouterLink></p>
   </section>
 </template>
 
