@@ -65,6 +65,26 @@ class CursoViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED
         )
 
+    @action(detail=True, methods=['delete'], permission_classes=[IsAuthenticated])
+    def desinscribir(self, request, pk=None):
+        """
+        Endpoint para que un usuario autenticado se desinscriba de este curso.
+        """
+        curso = self.get_object()
+        usuario = request.user
+        try:
+            inscripcion = Inscripcion.objects.get(usuario=usuario, curso=curso)
+            inscripcion.delete()
+            return Response(
+                {'status': 'Desinscripción exitosa.'},
+                status=status.HTTP_200_OK
+            )
+        except Inscripcion.DoesNotExist:
+            return Response(
+                {'error': 'No estás inscrito en este curso.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
 
 class LeccionViewSet(viewsets.ModelViewSet):
     serializer_class = LeccionSerializer
