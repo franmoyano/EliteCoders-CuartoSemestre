@@ -1,33 +1,25 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue' // 1. Importar ref y onMounted
-import { getCursoById } from '../api/cursos' // 2. Importar la función de la API
-
-// 3. Eliminar la importación del mock
-// import { courses } from '@/mocks/courses'
+import { ref, onMounted } from 'vue'
+import { getCursoById } from '../api/cursos'
 
 const route = useRoute()
 const router = useRouter()
 
-// 4. Crear un 'ref' para almacenar el curso. Lo iniciamos en 'null'
 const course = ref(null)
 
-// 5. Usar onMounted para cargar los datos cuando el componente se monte
 onMounted(async () => {
-  const courseId = route.params.id // Obtenemos el ID de la URL
+  const courseId = route.params.id
   try {
     const response = await getCursoById(courseId)
-    course.value = response.data // Asignamos los datos de la API al ref
+    course.value = response.data
   } catch (error) {
     console.error("Error al cargar el curso:", error)
-    // Aquí podrías redirigir a una página 404 si el curso no se encuentra
-    // router.push('/404')
   }
 })
 
-// 6. Actualizar la función 'comprar' para que use 'course.value'
 function comprar() {
-  if (course.value) { // Asegurarse de que 'course' ha cargado
+  if (course.value) {
     router.push(`/checkout?course=${course.value.id}`)
   }
 }
