@@ -10,6 +10,7 @@ const routes = [
   { path: '/cart', component: () => import('@/pages/Cart.vue') },
   { path: '/login', component: () => import('@/pages/Login.vue') },
   { path: '/register', component: () => import('@/pages/Register.vue') },
+  { path: '/mis-cursos', component: () => import('@/pages/MisCursos.vue') },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('@/pages/NotFound.vue') },
 ]
 

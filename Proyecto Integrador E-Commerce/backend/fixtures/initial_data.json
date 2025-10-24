@@ -1,132 +1,347 @@
 [
 {
     "model": "core.categoria",
-    "pk": 3,
+    "pk": 20,
     "fields": {
-        "nombre": "Programación"
+        "nombre": "Desarrollo Móvil"
     }
 },
 {
     "model": "core.categoria",
-    "pk": 4,
+    "pk": 21,
     "fields": {
-        "nombre": "Marketing Digital"
+        "nombre": "Negocios y Emprendimiento"
+    }
+},
+{
+    "model": "core.categoria",
+    "pk": 22,
+    "fields": {
+        "nombre": "Fotografía y Video"
     }
 },
 {
     "model": "core.instructor",
-    "pk": 3,
+    "pk": 20,
     "fields": {
-        "nombre": "Miguel Ángel García",
-        "bio": "Desarrollador experto"
+        "nombre": "Maria Solano",
+        "bio": "Ingeniera de Software experta en desarrollo móvil nativo y multiplataforma (iOS y Android)."
     }
 },
 {
     "model": "core.instructor",
-    "pk": 4,
+    "pk": 21,
     "fields": {
-        "nombre": "Lucía Fernandez",
-        "bio": "Especialista en Marketing Digital y Redes Sociales con más de 10 años de experiencia."
+        "nombre": "Roberto Fuentes",
+        "bio": "Emprendedor en serie y asesor financiero. Ayuda a startups a validar sus modelos de negocio."
+    }
+},
+{
+    "model": "core.instructor",
+    "pk": 22,
+    "fields": {
+        "nombre": "Ana Jurado",
+        "bio": "Fotógrafa profesional de paisajes y retratos, especializada en edición con Lightroom y Photoshop."
     }
 },
 {
     "model": "core.curso",
-    "pk": 3,
+    "pk": 20,
     "fields": {
-        "titulo": "Programación Java",
-        "descripcion": "Curso de programación Java desde cero",
-        "precio": "99500.00",
-        "categoria": 3,
-        "instructor": 3,
-        "imagen_portada": "",
+        "titulo": "React Native: De Cero a Experto",
+        "descripcion": "Construye aplicaciones móviles nativas para iOS y Android con una sola base de código en JavaScript y React.",
+        "precio": "120000.00",
+        "categoria": 20,
+        "instructor": 20,
+        "imagen_portada": "cursos_portadas/react_native.jpg",
         "publicado": true,
-        "fecha_creacion": "2025-10-06T23:04:44.304Z"
-    }
-},
-{
-    "model": "core.curso",
-    "pk": 4,
-    "fields": {
-        "titulo": "Marketing en Redes Sociales 2025",
-        "descripcion": "Aprende a gestionar y potenciar marcas en Instagram, Facebook y TikTok desde cero.",
-        "precio": "75000.00",
-        "categoria": 4,
-        "instructor": 4,
-        "imagen_portada": "",
-        "publicado": true,
-        "fecha_creacion": "2025-10-07T13:30:00.000Z"
+        "fecha_creacion": "2025-10-23T18:00:00.000Z"
     }
 },
 {
     "model": "core.leccion",
-    "pk": 1,
+    "pk": 20,
     "fields": {
-        "curso": 4,
-        "titulo": "Lección 1: Fundamentos de Instagram y TikTok",
-        "contenido_texto": "En esta lección cubriremos los algoritmos y las mejores prácticas para empezar en ambas plataformas.",
-        "video_url": null,
+        "curso": 20,
+        "titulo": "Introducción y Configuración del Entorno",
+        "contenido_texto": "Configurando Expo y React Native CLI. Creando nuestro primer 'Hola Mundo'.",
+        "video_url": "https://example.com/video/rn_01.mp4",
         "material_adjunto": "",
         "orden": 1
     }
 },
 {
     "model": "core.leccion",
-    "pk": 2,
+    "pk": 21,
     "fields": {
-        "curso": 4,
-        "titulo": "Lección 2: Creando Contenido Atractivo",
-        "contenido_texto": "Estrategias para diseñar publicaciones, reels y videos que capturen la atención de tu audiencia.",
-        "video_url": "https://example.com/video/contenido.mp4",
+        "curso": 20,
+        "titulo": "Componentes Core y Estilos (Styling)",
+        "contenido_texto": "Aprendiendo a usar View, Text, Image y StyleSheet.",
+        "video_url": "https://example.com/video/rn_02.mp4",
         "material_adjunto": "",
         "orden": 2
     }
 },
 {
     "model": "core.leccion",
-    "pk": 3,
+    "pk": 22,
     "fields": {
-        "curso": 4,
-        "titulo": "Lección 3: Métricas y Análisis de Resultados",
-        "contenido_texto": "Aprende a leer las estadísticas para entender qué funciona y optimizar tu estrategia.",
-        "video_url": null,
-        "material_adjunto": "lecciones_materiales/guia_metricas.pdf",
+        "curso": 20,
+        "titulo": "Navegación con React Navigation",
+        "contenido_texto": "Implementando Stack, Tab y Drawer navigation.",
+        "video_url": "https://example.com/video/rn_03.mp4",
+        "material_adjunto": "",
         "orden": 3
     }
 },
 {
     "model": "core.curso",
-    "pk": 5,
+    "pk": 21,
     "fields": {
-        "titulo": "SEO para Principiantes: Posiciona en Google",
-        "descripcion": "Entiende los conceptos clave del SEO para que tu sitio web aparezca en los primeros lugares de búsqueda.",
-        "precio": "82500.00",
-        "categoria": 4,
-        "instructor": 4,
-        "imagen_portada": "",
+        "titulo": "Finanzas Personales para Freelancers",
+        "descripcion": "Aprende a gestionar tus ingresos, pagar impuestos y empezar a invertir siendo trabajador independiente.",
+        "precio": "50000.00",
+        "categoria": 21,
+        "instructor": 21,
+        "imagen_portada": "cursos_portadas/finanzas_freelance.jpg",
         "publicado": true,
-        "fecha_creacion": "2025-10-07T13:45:00.000Z"
+        "fecha_creacion": "2025-10-23T18:10:00.000Z"
     }
 },
 {
     "model": "core.leccion",
-    "pk": 4,
+    "pk": 23,
     "fields": {
-        "curso": 5,
-        "titulo": "Capítulo 1: ¿Qué es el SEO y por qué es importante?",
-        "contenido_texto": "Introducción a los motores de búsqueda y al valor de aparecer en la primera página.",
+        "curso": 21,
+        "titulo": "El Mindset Financiero",
+        "contenido_texto": "Cambiando tu relación con el dinero y estableciendo metas claras.",
         "video_url": null,
+        "material_adjunto": "lecciones_materiales/metas_financieras.pdf",
+        "orden": 1
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 24,
+    "fields": {
+        "curso": 21,
+        "titulo": "Sistemas de Presupuesto (Sobre y Digital)",
+        "contenido_texto": "Cómo crear un presupuesto que funcione y te permita ahorrar.",
+        "video_url": "https://example.com/video/fin_02.mp4",
+        "material_adjunto": "",
+        "orden": 2
+    }
+},
+{
+    "model": "core.curso",
+    "pk": 22,
+    "fields": {
+        "titulo": "Fundamentos de la Fotografía Nocturna",
+        "descripcion": "Captura la magia de la noche. Aprende sobre larga exposición, Vía Láctea y light painting.",
+        "precio": "75000.00",
+        "categoria": 22,
+        "instructor": 22,
+        "imagen_portada": "cursos_portadas/foto_noche.jpg",
+        "publicado": true,
+        "fecha_creacion": "2025-10-23T18:20:00.000Z"
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 25,
+    "fields": {
+        "curso": 22,
+        "titulo": "El Triángulo de Exposición en la Oscuridad",
+        "contenido_texto": "Cómo balancear ISO, apertura y velocidad de obturación.",
+        "video_url": "https://example.com/video/foto_01.mp4",
         "material_adjunto": "",
         "orden": 1
     }
 },
 {
     "model": "core.leccion",
-    "pk": 5,
+    "pk": 26,
     "fields": {
-        "curso": 5,
-        "titulo": "Capítulo 2: Búsqueda de Palabras Clave (Keywords)",
-        "contenido_texto": "Herramientas y técnicas para encontrar las palabras que tus clientes potenciales están buscando.",
-        "video_url": "https://example.com/video/keywords.mp4",
+        "curso": 22,
+        "titulo": "Técnica de Larga Exposición (Seda en el Agua)",
+        "contenido_texto": "Usando trípodes y filtros para capturar movimiento.",
+        "video_url": "https://example.com/video/foto_02.mp4",
+        "material_adjunto": "",
+        "orden": 2
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 27,
+    "fields": {
+        "curso": 22,
+        "titulo": "Fotografiando Estrellas y la Vía Láctea",
+        "contenido_texto": "Configuraciones de cámara y apps para planificar tu toma.",
+        "video_url": "https://example.com/video/foto_03.mp4",
+        "material_adjunto": "",
+        "orden": 3
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 28,
+    "fields": {
+        "curso": 22,
+        "titulo": "Edición y Revelado en Lightroom",
+        "contenido_texto": "Cómo reducir el ruido y resaltar los detalles de tus fotos nocturnas.",
+        "video_url": "https://example.com/video/foto_04.mp4",
+        "material_adjunto": "",
+        "orden": 4
+    }
+},
+{
+    "model": "core.curso",
+    "pk": 23,
+    "fields": {
+        "titulo": "Desarrollo iOS 17 con SwiftUI",
+        "descripcion": "Crea aplicaciones hermosas y nativas para iPhone y iPad con el framework moderno de Apple.",
+        "precio": "110000.00",
+        "categoria": 20,
+        "instructor": 20,
+        "imagen_portada": "cursos_portadas/swiftui.jpg",
+        "publicado": true,
+        "fecha_creacion": "2025-10-23T18:30:00.000Z"
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 29,
+    "fields": {
+        "curso": 23,
+        "titulo": "Vistas, Modificadores y Stacks (VStack, HStack)",
+        "contenido_texto": "Componiendo interfaces declarativas.",
+        "video_url": "https://example.com/video/swift_01.mp4",
+        "material_adjunto": "",
+        "orden": 1
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 30,
+    "fields": {
+        "curso": 23,
+        "titulo": "Manejo de Estado (@State, @Binding)",
+        "contenido_texto": "Cómo reacciona tu UI a los cambios de datos.",
+        "video_url": "https://example.com/video/swift_02.mp4",
+        "material_adjunto": "",
+        "orden": 2
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 31,
+    "fields": {
+        "curso": 23,
+        "titulo": "Listas, Navegación y Datos",
+        "contenido_texto": "Creando listas dinámicas y navegando entre pantallas.",
+        "video_url": "https://example.com/video/swift_03.mp4",
+        "material_adjunto": "",
+        "orden": 3
+    }
+},
+{
+    "model": "core.curso",
+    "pk": 24,
+    "fields": {
+        "titulo": "Modelo de Negocio Canvas",
+        "descripcion": "Aprende a validar y estructurar tu idea de negocio en una sola página.",
+        "precio": "40000.00",
+        "categoria": 21,
+        "instructor": 21,
+        "imagen_portada": "cursos_portadas/canvas.jpg",
+        "publicado": true,
+        "fecha_creacion": "2025-10-23T18:40:00.000Z"
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 32,
+    "fields": {
+        "curso": 24,
+        "titulo": "Los 9 Bloques del Canvas",
+        "contenido_texto": "Un recorrido por la Propuesta de Valor, Segmentos de Clientes, Canales, etc.",
+        "video_url": "https://example.com/video/canvas_01.mp4",
+        "material_adjunto": "lecciones_materiales/plantilla_canvas.pdf",
+        "orden": 1
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 33,
+    "fields": {
+        "curso": 24,
+        "titulo": "Validando Hipótesis (Lean Startup)",
+        "contenido_texto": "Cómo salir a la calle a validar que tu idea tiene mercado.",
+        "video_url": "https://example.com/video/canvas_02.mp4",
+        "material_adjunto": "",
+        "orden": 2
+    }
+},
+{
+    "model": "core.curso",
+    "pk": 25,
+    "fields": {
+        "titulo": "Edición de Retrato con Lightroom",
+        "descripcion": "Curso rápido para mejorar tus retratos, enfocado en pieles, ojos y colorimetría.",
+        "precio": "35000.00",
+        "categoria": 22,
+        "instructor": 22,
+        "imagen_portada": "cursos_portadas/lightroom_retrato.jpg",
+        "publicado": true,
+        "fecha_creacion": "2025-10-23T18:50:00.000Z"
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 34,
+    "fields": {
+        "curso": 25,
+        "titulo": "Flujo de Trabajo: De la Importación a los Presets",
+        "contenido_texto": "Un curso intensivo de una sola lección que cubre todo el proceso de edición de un retrato.",
+        "video_url": "https://example.com/video/lr_01.mp4",
+        "material_adjunto": "lecciones_materiales/presets_ejemplo.xmp",
+        "orden": 1
+    }
+},
+{
+    "model": "core.curso",
+    "pk": 26,
+    "fields": {
+        "titulo": "Introducción a Flutter y Dart",
+        "descripcion": "El framework de Google para construir aplicaciones compiladas nativamente para móvil, web y escritorio.",
+        "precio": "95000.00",
+        "categoria": 20,
+        "instructor": 20,
+        "imagen_portada": "cursos_portadas/flutter.jpg",
+        "publicado": true,
+        "fecha_creacion": "2025-10-23T19:00:00.000Z"
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 35,
+    "fields": {
+        "curso": 26,
+        "titulo": "Fundamentos del Lenguaje Dart",
+        "contenido_texto": "Variables, tipos, funciones y programación orientada a objetos en Dart.",
+        "video_url": "https://example.com/video/flutter_01.mp4",
+        "material_adjunto": "",
+        "orden": 1
+    }
+},
+{
+    "model": "core.leccion",
+    "pk": 36,
+    "fields": {
+        "curso": 26,
+        "titulo": "Widgets: Stateless vs Stateful",
+        "contenido_texto": "El concepto central de Flutter. Todo es un Widget.",
+        "video_url": "https://example.com/video/flutter_02.mp4",
         "material_adjunto": "",
         "orden": 2
     }
