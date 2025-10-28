@@ -1,5 +1,6 @@
 import Router from "express-promise-router";
 import { signin, signup, logout, profile } from "../controllers/auth.controller.js";
+import { isAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
