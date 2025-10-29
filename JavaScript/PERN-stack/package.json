@@ -3,13 +3,13 @@
   "name": "pern-stack",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "backend/index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node ./src/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "EliteCoders",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
