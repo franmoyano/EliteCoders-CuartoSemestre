@@ -1,8 +1,12 @@
 CREATE TABLE IF NOT EXISTS tareas (
     id SERIAL PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL UNIQUE,
-    descripcion TEXT
+    descripcion TEXT,
 );
+
+ALTER TABLE tareas
+ADD COLUMN usuario_id INTEGER REFERENCES usuarios(id);
+
 CREATE TABLE IF NOT EXISTS usuarios (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -11,3 +15,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
     fecha_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE usuarios
+ADD COLUMN gravatar_url VARCHAR(255);
