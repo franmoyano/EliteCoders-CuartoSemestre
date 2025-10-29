@@ -1,79 +1,142 @@
-import os
+# personaje.py
 import pygame
-from contstantes import ASSETS_PATH
+import os
+import colorsys
+from constantes import ASSETS_PATH, SCREEN_WIDTH, SCREEN_HEIGHT
+
+def load_img(*parts, scale=None):
+    img = pygame.image.load(os.path.join(ASSETS_PATH, *parts)).convert_alpha()
+    if scale:
+        img = pygame.transform.scale(img, scale)
+    return img
 
 class Personaje:
+    MAX_ENERGIA = 100
+    SPEED = 5
+
     def __init__(self, x, y):
-        # Construye la ruta a la imagen del personaje
-        self.image = pygame.image.load(os.path.join(ASSETS_PATH, 'personaje1.png'))
-        self.image = pygame.transform.scale(self.image, (95, 95))
-        self.shape = self.image.get_rect(center=(x, y))
+        self.image = load_img('images', 'Speeder.png', scale=(95, 95))
+        self.rect = self.image.get_rect(center=(x, y))
         self.lasers = []
-        self.energia = 100 #barra de energia
+        self.energia = self.MAX_ENERGIA
 
     def mover(self, dx, dy):
-        self.shape.x += dx
-        self.shape.y += dy
+        self.rect.x += dx
+        self.rect.y += dy
+        self.rect.clamp_ip(pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
 
     def lanzar_laser(self):
-        laser = pygame.Rect(self.shape.centerx, self.shape.top)
+        laser = Laser(self.rect.centerx, self.rect.top)
         self.lasers.append(laser)
 
-    def recibir_dano(self):
-        self.energia -= 10
-        if self.energia <= 0:
-            self.energia <= 0
-            return False
-        return True
+    def recibir_dano(self, cantidad=10):
+        self.energia = max(0, self.energia - cantidad)
+        return self.energia > 0
 
-    def dibujar(self, screen):
-        screen.blit(self.image, self.shape.topleft)
-        for laser in self.lasers:
-            laser.dibujar(screen)
-            laser.mover()
-
-        #dibujar barra de energia
-        pygame.draw.rect(screen, (255, 0, 0), (10, 10, 100, 20)) #barra de fondo
-        pygame.draw.rect(screen, (0, 255, 0), (10, 10, self.energia, 10)) #barra de energia
-
-class Enemigo:
-    def __init__(self, x, y):
-        self.image = pygame.image.load(os.path.join(ASSETS_PATH, 'images', 'enemigo1.png'))
-        self.image = pygame.transform.scale(self.image, (80, 80))
-        self.image = self.image.get_rect(center=(x, y))
-
-    def mover(self, screen):
+    def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)
 
-class Laser:
+    def update_lasers(self):
+        vivos = []
+        for l in self.lasers:
+            if l.update():
+                vivos.append(l)
+        self.lasers = vivos
+
+    def draw_lasers(self, screen):
+        for l in self.lasers:
+            l.draw(screen)
+
+    def energia_ratio(self):
+        return self.energia / self.MAX_ENERGIA
+
+    def _health_color(self):
+        r = self.energia_ratio()
+        r = r ** 0.2
+        hue = (1.0/3.0) * r
+        sat = 1.0
+        val = 0.5
+        fr, fg, fb = colorsys.hsv_to_rgb(hue, sat, val)
+        return (int(fr*255), int(fg*255), int(fb*255))
+
+    def draw_health_bar(self, screen, width=50, height=12, offset=6, position="below"):
+        bar_x = self.rect.centerx - width // 2
+
+        if position == "below":
+            bar_y = self.rect.bottom + offset
+        elif position == "inside":
+            bar_y = self.rect.bottom - height - offset
+        else:
+            bar_y = self.rect.top - height - offset
+
+        try:
+            from constantes import SCREEN_HEIGHT
+            if bar_y + height > SCREEN_HEIGHT:
+                bar_y = self.rect.top - height - offset
+        except Exception:
+            pass
+
+        # Fondo, borde y relleno
+        pygame.draw.rect(screen, (40, 40, 40), (bar_x, bar_y, width, height))
+        pygame.draw.rect(screen, (255, 255, 255), (bar_x, bar_y, width, height), 1)
+        fill_w = int(width * self.energia_ratio())
+        pygame.draw.rect(screen, self._health_color(), (bar_x, bar_y, fill_w, height))
+
+class Enemigo:
+    SPEED = 5
     def __init__(self, x, y):
-        self.imnage = pygame.image.load(os.path.join(ASSETS_PATH, 'images', 'laser.png'))
-        self.rect = self.imnage.get_rect(center=(x, y))
+        self.image = load_img('images', 'enemigo1.png', scale=(80, 80))
+        self.rect = self.image.get_rect(topleft=(x, y))
 
-    def mover(self, x, y):
-        self.rect = self.imnage.get_rect(center=(x, y))
+    def mover(self):
+        self.rect.y += self.SPEED
 
-    def dibujar(self, screen):
-        screen.blit(self.imnage, self.rect.topleft)
+    def draw(self, screen):
+        screen.blit(self.image, self.rect.topleft)
+
+
+class Laser:
+    SPEED = 10
+    def __init__(self, x, y):
+        self.image = load_img('images', 'laser1.png')
+        self.rect = self.image.get_rect(center=(x, y))
+
+    def update(self):
+        self.rect.y -= self.SPEED
+        return self.rect.bottom > 0
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect.topleft)
+
 
 class Explosion:
+    _FRAMES = None
+    FRAME_HOLD = 20
+
+    @classmethod
+    def _get_frames(cls):
+        if cls._FRAMES is None:
+            cls._FRAMES = [
+                load_img('images', f'regularExplosion0{i:02d}.png') for i in range(9)
+            ]
+        return cls._FRAMES
+
     def __init__(self, x, y):
-        self.images = [pygame.image.load(os.path.join(ASSETS_PATH, 'images', f'regularExplosion0{i:2}.png')) for i in range(9)]
-        self.index = 0 #indice de la animiacion
-        self.image = self.images[self.index]
+        self.frames = self._get_frames()
+        self.index = 0
+        self.image = self.frames[self.index]
         self.rect = self.image.get_rect(center=(x, y))
-        self.frame_rate = 0 #contador de frames
-        self.max_frames = 20 #maximo de frames por imagen
+        self.frame_counter = 0
 
-    def actualizar(self):
-        #actualiza la animacion
-        self.frame_rate += 1
-        if self.frame_rate >= self.max_frames:
+    def update(self):
+        self.frame_counter += 1
+        if self.frame_counter >= self.FRAME_HOLD:
+            self.frame_counter = 0
             self.index += 1
-            if self.index >= len(self.images):
-                return False # retorna en false porque aqui termina la animacion
-            self.image = self.images[self.index]
-            return True
+            if self.index >= len(self.frames):
+                return False
+            self.image = self.frames[self.index]
+        return True
 
-    def dibujar(self, screen):
+    def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)
