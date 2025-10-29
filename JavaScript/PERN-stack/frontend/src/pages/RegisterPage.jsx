@@ -1,48 +1,51 @@
-import { Button, Card, Input } from "../components/ui/index.js";
+import { Button, Card, Container, Input, Label } from "../components/ui";
 import { useForm } from "react-hook-form";
-import { Axios } from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/authContext";
 
 function RegisterPage() {
   const { register, handleSubmit, formState: { errors } } = useForm();
-
+  const { signup, errors: setUserErrors } = useAuth();
+  const navigate = useNavigate();
   const onSubmit = handleSubmit(async (data) => {
-
-    const res = await Axios.post("http://localhost:3000/api/signup", data, {
-      withCredentials: true
-    });
-    console.log(res.data);
+    const user = await signup(data);
+    if (user) {
+      navigate("/tareas");
+    }
   });
 
   return (
-    <div className="h-[calc(100vh-64px)] flex items-center justify-center">
+    <Container className="h-[calc(100vh-10rem)] flex items-center justify-center">
       <Card>
-        <h3 className="text-2xl font-bold ">Registro</h3>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Input placeholder="Ingrese su nombre"
-           {...register("name", { required: true })} /> 
+        {
+          setUserErrors && setUserErrors.map((error) => (
+            <div className="flex justify-center" key={error}>
+              <p className="bg-red-500 text-white p-2 max-w-60 text-center">{error}</p>
+            </div>
+          ))
+        }
+        <h3 className="text-4xl font-bold my-2">Registro</h3>
 
-          {
-          errors.name && <span className="text-red-500">Este campo es requerido</span>
-          }
-
-          <Input type="email" placeholder="Ingrese su email"
-           {...register("email", { required: true })} />
-
-          {
-          errors.email && <span className="text-red-500">Este campo es requerido</span>
-          }
-
-          <Input type="password" placeholder="Ingrese su contraseña"
-           {...register("password", { required: true })} />
-
-          {
-          errors.password && <span className="text-red-500">Este campo es requerido</span>
-          }
-
+        <form onSubmit={onSubmit}>
+          <div>
+            <Label htmlFor="name">Nombre</Label>
+            <Input placeholder="Ingrese su nombre" {...register("name", { required: true })} />
+            {errors.name && <span className="text-red-500">Este campo es requerido</span>}
+            <Label htmlFor="email">Email</Label>
+            <Input type="email" placeholder="Ingrese su email" {...register("email", { required: true })} />
+            {errors.email && <span className="text-red-500">Este campo es requerido</span>}
+            <Label htmlFor="password">Contraseña</Label>
+            <Input type="password" placeholder="Ingrese su contraseña" {...register("password", { required: true })} />
+            {errors.password && <span className="text-red-500">Este campo es requerido</span>}
+          </div>
           <Button>Registrarse</Button>
         </form>
+        <div className="flex justify-between my-4">
+          <p className="mr-4">¿Ya tienes una cuenta?</p>
+          <Link to="/login">Inicia sesión</Link>
+        </div>
       </Card>
-    </div>
+    </Container>
   );
 }
 
