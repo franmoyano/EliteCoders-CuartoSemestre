@@ -1,12 +1,9 @@
-import React from 'react'
-import { Children } from 'react'
-
-export function Button({children}) {
-  return (
-    <button className='relative inline-flex items-center gap-1.5 rounded-b-md bg-blue-500 px-3 py-1.5 text-sm font-text-white shadow-sm
-     hover:bg-blue-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 
-     disabled:opacity-50 disabled:cursor-not-allowed'>{children}</button>
-  )
+export function Button({children, className, ...props}) {
+    return (
+        <button className={`relative inline-flex items-center gap-1.5 rounded-md bg-blue-500 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${className}`} {...props}>
+            {children}
+        </button>
+    );
 }
 
-export default Button
+export default Button;
