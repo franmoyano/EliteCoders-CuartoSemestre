@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Activar Bomba</title>
+  <!-- quita el espacio inicial en la ruta -->
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <div class="grid"></div>
+
+  <div class="warninng"></div>
+
+  <div class="base">
+    <button id="activate"></button>
+  </div>
+
+  <div class="box opened" id="cover"></div>
+
+  <div>SELF-&thinsp;DESTRUCT</div>
+
+  <div id="panel">
+    <div id="msg">DEVICE SELF-DESTRUCTION</div>
+    <div id="time">9</div>
+    <span id="abort">ABORT</span>
+    <!-- este antes tenía id="msg"; debe ser "detonate" -->
+    <span id="detonate">DETONATE</span>
+
+    <!-- en HTML estaba "turn--off"; lo mantenemos y lo referimos así en JS -->
+    <div id="turn--off"></div>
+    <div id="closing"></div>
+
+    <div id="restart">
+      <button id="reload"></button>
+    </div>
+
+    <div id="mute"></div>
+
+    <!-- asegúrate de que los nombres y rutas coincidan con tus archivos -->
+    <audio id="alarm" preload="auto">
+      <source src="./sound/alarm.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="alarm2" preload="auto">
+      <source src="./sound/explosion.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- usa ruta relativa, no absoluta -->
+    <script src="./prueba.js"></script>
+  </div>
+</body>
+</html>
