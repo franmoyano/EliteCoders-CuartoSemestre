@@ -1,0 +1,198 @@
+/* Fondo general */
+body {
+  background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+  color: red;
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Rejilla de fondo */
+.grid {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(rgba(255, 0, 0, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0;
+}
+
+/* Base del botón */
+.base {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  background: #222;
+  border-radius: 50%;
+  box-shadow: inset 0 0 15px #000, 0 0 25px #ff0000aa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Botón rojo */
+#activate {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: none;
+  background: radial-gradient(circle at top, #ff4d4d, #b30000);
+  box-shadow: 0 8px #660000, 0 0 25px #ff0000aa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#activate.pushed {
+  transform: translateY(8px);
+  box-shadow: 0 2px #330000, 0 0 10px #ff000055;
+}
+
+/* Tapa transparente */
+.box {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotateX(0deg);
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 0, 0, 0.4);
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
+  transition: transform 0.8s ease;
+  transform-origin: top;
+  cursor: pointer;
+}
+.box.opened {
+  transform: translate(-50%, -50%) rotateX(120deg);
+}
+
+/* Texto SELF DESTRUCT */
+body > div:last-of-type {
+  position: absolute;
+  top: 80%;
+  width: 100%;
+  font-size: 2rem;
+  letter-spacing: 5px;
+  color: #ff0000;
+  text-shadow: 0 0 15px #ff0000aa;
+}
+
+/* Panel de cuenta regresiva */
+#panel {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 20, 20, 0.9);
+  border: 2px solid #ff0000;
+  border-radius: 12px;
+  padding: 20px 30px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 0 30px #ff000080;
+}
+#panel.show {
+  display: flex;
+  animation: blink 0.5s ease alternate infinite;
+}
+
+/* Texto del panel */
+#msg {
+  font-size: 1.3rem;
+  margin: 10px;
+  color: #ff4d4d;
+  text-shadow: 0 0 10px #ff0000;
+}
+
+/* Contador */
+#time {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #ff0000;
+  text-shadow: 0 0 20px #ff0000;
+}
+#time.crono {
+  color: #fff;
+  text-shadow: 0 0 10px #fff;
+}
+
+/* Botón ABORT */
+#abort {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border: 2px solid #ff0000;
+  border-radius: 6px;
+  color: #ff0000;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+#abort:hover {
+  background: #ff0000;
+  color: black;
+}
+#abort.hide {
+  display: none;
+}
+
+/* Texto DETONATE */
+#msg.show {
+  color: white;
+  text-shadow: 0 0 25px red;
+}
+
+/* Animaciones */
+@keyframes blink {
+  from { box-shadow: 0 0 5px #ff0000; }
+  to { box-shadow: 0 0 25px #ff0000; }
+}
+
+/* Panel apagándose */
+#turn--off.close,
+#closing.close {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+/* Botón de reinicio */
+#restart button {
+  background: #333;
+  border: 2px solid #ff0000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: #ff0000;
+  cursor: pointer;
+  display: none;
+}
+#restart button.show {
+  display: inline-block;
+}
+
+/* Mute */
+#mute {
+  width: 25px;
+  height: 25px;
+  margin-top: 10px;
+  border: 2px solid #ff0000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+#mute.muted {
+  background: #ff0000;
+}
+
+
+
+
+
+
+
+
+
+
