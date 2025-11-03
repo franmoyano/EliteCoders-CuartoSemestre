@@ -12,6 +12,21 @@ const routes = [
   { path: '/register', component: () => import('@/pages/Register.vue') },
   { path: '/mis-cursos', component: () => import('@/pages/MisCursos.vue') },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('@/pages/NotFound.vue') },
+  {
+  path: '/',
+  name: 'home',
+  component: () => import('@/pages/Home.vue')
+  },
+  {
+    path: '/plans',
+    name: 'plans',
+    component: () => import('@/pages/Plans.vue')
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import('@/pages/About.vue')
+  }
 ]
 
 export const router = createRouter({
