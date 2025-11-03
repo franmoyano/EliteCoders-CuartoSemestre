@@ -1,0 +1,134 @@
+[
+  {
+    "model": "core.categoria",
+    "pk": 1,
+    "fields": {
+      "nombre": "Programación"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 2,
+    "fields": {
+      "nombre": "Diseño UX/UI"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 3,
+    "fields": {
+      "nombre": "Data Science"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 4,
+    "fields": {
+      "nombre": "Marketing Digital"
+    }
+  },
+  {
+    "model": "core.instructor",
+    "pk": 1,
+    "fields": {
+      "nombre": "Ana Pérez",
+      "bio": "Desarrolladora fullstack y mentora."
+    }
+  },
+  {
+    "model": "core.instructor",
+    "pk": 2,
+    "fields": {
+      "nombre": "Juan Gómez",
+      "bio": "Diseñador UX con 10+ años en la industria."
+    }
+  },
+  {
+    "model": "core.instructor",
+    "pk": 3,
+    "fields": {
+      "nombre": "Lucía Torres",
+      "bio": "Data scientist especializada en ML."
+    }
+  },
+  {
+    "model": "core.curso",
+    "pk": 1,
+    "fields": {
+      "titulo": "Vue 3 desde cero",
+      "descripcion": "Aprendé Vue 3 y composición con Vite.",
+      "precio": "199.99",
+      "categoria": 1,
+      "instructor": 1,
+      "imagen_portada": null,
+      "publicado": true,
+      "fecha_creacion": "2025-01-02T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.curso",
+    "pk": 2,
+    "fields": {
+      "titulo": "Diseño UX esencial",
+      "descripcion": "Principios de UX, research y prototipado.",
+      "precio": "149.00",
+      "categoria": 2,
+      "instructor": 2,
+      "imagen_portada": null,
+      "publicado": true,
+      "fecha_creacion": "2025-01-03T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.curso",
+    "pk": 3,
+    "fields": {
+      "titulo": "Introducción a Data Science",
+      "descripcion": "Numpy, Pandas y visualización.",
+      "precio": "179.00",
+      "categoria": 3,
+      "instructor": 3,
+      "imagen_portada": null,
+      "publicado": true,
+      "fecha_creacion": "2025-01-04T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.curso",
+    "pk": 4,
+    "fields": {
+      "titulo": "Marketing Digital 360",
+      "descripcion": "SEO, SEM, redes y analítica.",
+      "precio": "129.00",
+      "categoria": 4,
+      "instructor": 2,
+      "imagen_portada": null,
+      "publicado": true,
+      "fecha_creacion": "2025-01-05T12:00:00Z"
+    }
+  },
+  {
+    "model": "core.leccion",
+    "pk": 1,
+    "fields": {
+      "curso": 1,
+      "titulo": "Bienvenida",
+      "contenido_texto": "Introducción al curso.",
+      "video_url": null,
+      "material_adjunto": null,
+      "orden": 1
+    }
+  },
+  {
+    "model": "core.leccion",
+    "pk": 2,
+    "fields": {
+      "curso": 1,
+      "titulo": "Setup del entorno",
+      "contenido_texto": "Instalación de Node y Vite.",
+      "video_url": null,
+      "material_adjunto": null,
+      "orden": 2
+    }
+  }
+]
