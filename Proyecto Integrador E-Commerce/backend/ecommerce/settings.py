@@ -14,8 +14,9 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 FRONTEND_URL = config('FRONTEND_URL')
+FRONTEND_URL_RAILWAY = config('FRONTEND_URL_RAILWAY')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', FRONTEND_URL]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', FRONTEND_URL, FRONTEND_URL_RAILWAY]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -124,7 +125,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # URL donde corre la app Vite/React/Vue
     "http://127.0.0.1:5173",
-    FRONTEND_URL
+    "https://"+FRONTEND_URL_RAILWAY
 ]
 
 # Internationalization
