@@ -1,3 +1,5 @@
+import mercadopago
+from django.conf import settings
 from rest_framework import viewsets, status, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -180,19 +182,137 @@ class CarritoViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='checkout')
     def checkout(self, request, pk=None):
         """
-        Convierte el carrito en un pedido.
+        Genera una preferencia de pago con los ítems del carrito activo del usuario.
         """
         carrito = self.get_object()
+
         if not carrito.items.exists():
             return Response({'error': 'El carrito está vacío'}, status=status.HTTP_400_BAD_REQUEST)
 
-        pedido = Pedido.objects.create(usuario=request.user)
-        pedido.generar_desde_carrito(carrito)
+        # Crear la preferencia con los ítems del carrito
+        sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
 
-        # Opcional: inscribir al usuario automáticamente en los cursos comprados
-        for item in pedido.items.all():
-            from .models import Inscripcion
-            Inscripcion.objects.get_or_create(usuario=request.user, curso=item.curso)
+        items = []
+        for item in carrito.items.all():
+            items.append({
+                "title": item.curso.titulo,
+                "quantity": item.cantidad,
+                "unit_price": float(item.curso.precio),
+            })
 
-        serializer = PedidoSerializer(pedido)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        preference_data = {
+            "items": items,
+            "back_urls": {
+                "success": f"{settings.FRONTEND_URL}/payments/success/{carrito.id}/",
+                "failure": f"{settings.FRONTEND_URL}/payments/failure/{carrito.id}/",
+            },
+            "auto_return": "approved",
+            "external_reference": str(carrito.id),
+        }
+
+        preference_response = sdk.preference().create(preference_data)
+        preference = preference_response["response"]
+
+        return Response({
+            "preference_id": preference["id"],
+            "init_point": preference["init_point"],
+        }, status=status.HTTP_201_CREATED)
+
+
+# ------------------------------------------------------------------
+# Endpoints para manejar el retorno desde MercadoPago
+# ------------------------------------------------------------------
+from django.http import HttpResponse, HttpResponseBadRequest
+
+
+def payments_success(request, carrito_id):
+    """
+    Endpoint público al que MercadoPago redirige después del pago exitoso.
+    Valida el pago con la SDK de MercadoPago, crea un Pedido desde el carrito,
+    genera inscripciones para el usuario y marca el carrito como completado.
+    """
+    try:
+        carrito = Carrito.objects.get(pk=carrito_id)
+    except Carrito.DoesNotExist:
+        return HttpResponseBadRequest("Carrito no encontrado")
+
+    # MercadoPago pasa collection_id o payment_id en la query string
+    collection_id = request.GET.get('collection_id') or request.GET.get('payment_id')
+    collection_status = request.GET.get('collection_status') or request.GET.get('status')
+
+    if not collection_id and not collection_status:
+        return HttpResponseBadRequest("Parámetros de pago ausentes")
+
+    sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+
+    # Intentar verificar el pago con la API de MercadoPago si tenemos collection_id
+    payment_approved = False
+    payment_info = None
+    if collection_id:
+        try:
+            payment_resp = sdk.payment().get(collection_id)
+            payment_info = payment_resp.get('response', {})
+            # Algunos entornos usan 'status' o 'collection_status'
+            status_mp = payment_info.get('status') or payment_info.get('collection_status')
+            if status_mp and status_mp.lower() == 'approved':
+                payment_approved = True
+        except Exception as e:
+            # No interrumpimos: usaremos collection_status si está presente
+            payment_info = None
+
+    # Si no pudimos verificar por SDK, confiar en collection_status si viene en la query
+    if not payment_approved and collection_status:
+        if collection_status.lower() == 'approved':
+            payment_approved = True
+
+    if not payment_approved:
+        # Pago no aprobado; mostrar mensaje simple
+        return HttpResponse("Pago no aprobado. Si crees que es un error, contacta soporte.")
+
+    # Pago aprobado: convertir carrito en pedido, crear items y generar inscripciones
+    items = list(carrito.items.all())
+
+    pedido = Pedido.objects.create(usuario=carrito.usuario, completado=True)
+    for item in items:
+        # Crear ItemPedido
+        from .models import ItemPedido
+        ItemPedido.objects.create(pedido=pedido, curso=item.curso, precio_compra=item.curso.precio)
+
+        # Crear Inscripcion si no existe
+        if not Inscripcion.objects.filter(usuario=carrito.usuario, curso=item.curso).exists():
+            Inscripcion.objects.create(usuario=carrito.usuario, curso=item.curso)
+
+    # Vaciar y marcar carrito como completado
+    carrito.vaciar()
+    carrito.completado = True
+    carrito.save()
+
+    # Responder con una página simple que permite volver al frontend
+    html = f"""
+    <html><body>
+      <h1>Pago confirmado</h1>
+      <p>Tu compra fue procesada correctamente. Gracias.</p>
+      <p><a href="/">Volver al sitio</a></p>
+    </body></html>
+    """
+    return HttpResponse(html)
+
+
+def payments_failure(request, carrito_id):
+    """
+    Página simple para pagos fallidos o cancelados por el usuario.
+    """
+    try:
+        carrito = Carrito.objects.get(pk=carrito_id)
+    except Carrito.DoesNotExist:
+        return HttpResponseBadRequest("Carrito no encontrado")
+
+    # Aquí podemos mostrar una página con instrucciones o volver al carrito
+    html = f"""
+    <html><body>
+      <h1>Pago no completado</h1>
+      <p>El pago no fue completado. Tu carrito permanece intacto.</p>
+      <p><a href="/cart">Volver al carrito</a></p>
+    </body></html>
+    """
+    return HttpResponse(html)

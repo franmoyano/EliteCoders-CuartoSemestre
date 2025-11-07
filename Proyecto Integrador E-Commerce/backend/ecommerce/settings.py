@@ -13,12 +13,15 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+FRONTEND_URL = config('FRONTEND_URL')
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', FRONTEND_URL]
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Application definition
+MERCADOPAGO_ACCESS_TOKEN = config('MERCADOPAGO_ACCESS_TOKEN')
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
