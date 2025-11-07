@@ -124,6 +124,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # URL donde corre la app Vite/React/Vue
     "http://127.0.0.1:5173",
+    FRONTEND_URL
 ]
 
 # Internationalization
