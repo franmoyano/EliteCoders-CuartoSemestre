@@ -368,25 +368,34 @@ def mercadopago_webhook(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
 
-    try:
-        payload = json.loads(request.body.decode('utf-8'))
-    except Exception:
-        logger.exception('Invalid JSON received in mercadopago_webhook')
-        return HttpResponseBadRequest('Invalid JSON')
+        # Intentar leer el body como JSON (formato V1 de webhook)
+        try:
+            payload = json.loads(request.body.decode('utf-8'))
+            if not isinstance(payload, dict):
+                payload = {}
+        except Exception:
+            logger.info('No JSON body found in webhook, checking query params.')
+            payload = {}
 
-    # Extraer payment id de la notificación
-    payment_id = None
-    if isinstance(payload, dict):
+        # 1. Extraer payment id del payload JSON (V1)
+        payment_id = None
         data = payload.get('data') or {}
         if isinstance(data, dict):
             payment_id = data.get('id')
-        # Algunos webhooks usan payload['type'] y payload['id']
         if not payment_id:
             payment_id = payload.get('id')
 
-    if not payment_id:
-        logger.warning('No payment id found in webhook payload: %s', payload)
-        return HttpResponseBadRequest('No payment id in payload')
+        # 2. Si no se encontró, extraer de query params (V2 y logs de usuario)
+        if not payment_id:
+            payment_id = request.GET.get('data.id') or request.GET.get('id')
+            if payment_id:
+                logger.info('mercadopago_webhook: payment_id %s found in query parameters', payment_id)
+
+        # 3. Validar que tengamos un ID
+        if not payment_id:
+            logger.warning('No payment id found in webhook payload or query params. Body: %s, Query: %s', request.body,
+                           request.GET)
+            return HttpResponseBadRequest('No payment id in payload or query params')
 
     sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
     try:
@@ -406,7 +415,8 @@ def mercadopago_webhook(request):
         carrito_id = None
 
     # Determinar si pago aprobado
-    status_mp = (payment_info.get('status') or payment_info.get('collection_status') or '').lower()
+    status_val = payment_info.get('status') or payment_info.get('collection_status') or ''
+    status_mp = str(status_val).lower()
     logger.info('mercadopago_webhook payment_id=%s external_reference=%s status=%s', payment_id, external_reference, status_mp)
 
     if not carrito_id:
