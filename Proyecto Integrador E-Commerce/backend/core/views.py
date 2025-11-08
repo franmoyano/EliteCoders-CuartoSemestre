@@ -200,12 +200,22 @@ class CarritoViewSet(viewsets.ModelViewSet):
                 "unit_price": float(item.curso.precio),
             })
 
+        # Build backend URLs so MercadoPago redirects hit our backend first.
+        # Use request.build_absolute_uri to create absolute URLs based on the current host.
+        success_backend = request.build_absolute_uri(f"/api/v1/payments/success/{carrito.id}/")
+        failure_backend = request.build_absolute_uri(f"/api/v1/payments/failure/{carrito.id}/")
+        notification_url = request.build_absolute_uri(f"/api/v1/webhook/mercadopago/")
+
         preference_data = {
             "items": items,
             "back_urls": {
-                "success": f"{settings.FRONTEND_URL_RAILWAY}/payments/success/{carrito.id}/",
-                "failure": f"{settings.FRONTEND_URL_RAILWAY}/payments/failure/{carrito.id}/",
+                # Redirects will go to backend endpoints which will verify/process
+                # the payment and then redirect to the frontend UI.
+                "success": success_backend,
+                "failure": failure_backend,
             },
+            # notification_url: MercadoPago will POST notifications here (webhook)
+            "notification_url": notification_url,
             "auto_return": "approved",
             "external_reference": str(carrito.id),
         }
