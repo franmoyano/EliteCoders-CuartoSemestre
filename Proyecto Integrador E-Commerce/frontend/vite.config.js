@@ -9,7 +9,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  base: './', // 👈 necesario para rutas relativas correctas en Railway
+  base: process.env.NODE_ENV === 'production' ? './' : '/',
   server: {
     port: 5173, // solo para dev local
     strictPort: false,
