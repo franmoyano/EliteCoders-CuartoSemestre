@@ -203,8 +203,8 @@ class CarritoViewSet(viewsets.ModelViewSet):
         preference_data = {
             "items": items,
             "back_urls": {
-                "success": f"{settings.FRONTEND_URL}/payments/success/{carrito.id}/",
-                "failure": f"{settings.FRONTEND_URL}/payments/failure/{carrito.id}/",
+                "success": f"{settings.FRONTEND_URL_RAILWAY}/payments/success/{carrito.id}/",
+                "failure": f"{settings.FRONTEND_URL_RAILWAY}/payments/failure/{carrito.id}/",
             },
             "auto_return": "approved",
             "external_reference": str(carrito.id),
