@@ -522,7 +522,25 @@ def payments_failure(request, carrito_id):
 
 @csrf_exempt
 def mercadopago_webhook(request):
-    logger.info(request)
+    # --- Esto es lo que querías ver ---
+    logger.info("========== WEBHOOK RECIBIDO ==========")
+    logger.info(f"METODO: {request.method}")
+    logger.info(f"HEADERS: {dict(request.headers)}")
+    logger.info(f"QUERY PARAMS (GET): {request.GET}")
+
+    try:
+        body_unicode = request.body.decode('utf-8')
+        logger.info(f"BODY (raw): {body_unicode}")
+        # Opcional: intentar parsear como JSON
+        # body_json = json.loads(body_unicode)
+        # logger.info(f"BODY (json): {body_json}")
+    except Exception as e:
+        logger.warning(f"No se pudo leer o parsear el body: {e}")
+    # --- Fin de la depuración ---
+
+    # --- Esta es la corrección ---
+    # Devuelve siempre 200 OK para que MercadoPago no reintente.
+    return JsonResponse({"status": "received"}, status=200)
 
 @csrf_exempt
 def webhook_ping(request):
