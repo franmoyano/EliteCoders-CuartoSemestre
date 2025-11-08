@@ -220,8 +220,19 @@ class CarritoViewSet(viewsets.ModelViewSet):
             "external_reference": str(carrito.id),
         }
 
-        preference_response = sdk.preference().create(preference_data)
-        preference = preference_response["response"]
+        try:
+            preference_response = sdk.preference().create(preference_data)
+        except Exception as e:
+            # Log and return a useful error so the frontend can show a message
+            print('Error creating MercadoPago preference:', e)
+            return Response({'error': 'preference_creation_failed', 'details': str(e)}, status=status.HTTP_502_BAD_GATEWAY)
+
+        preference = preference_response.get('response') if isinstance(preference_response, dict) else None
+
+        # Validate structure returned by SDK
+        if not preference or 'id' not in preference or 'init_point' not in preference:
+            print('Unexpected preference response from MercadoPago:', preference_response)
+            return Response({'error': 'invalid_preference_response', 'details': preference_response}, status=status.HTTP_502_BAD_GATEWAY)
 
         return Response({
             "preference_id": preference["id"],
