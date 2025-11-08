@@ -449,3 +449,18 @@ def mercadopago_webhook(request):
     logger.info('Webhook processed carrito=%s created_inscriptions=%s pedido=%s', carrito_id, created_inscriptions, pedido.id)
 
     return JsonResponse({'ok': True, 'processed': True, 'created': created_inscriptions}, status=200)
+
+
+@csrf_exempt
+def webhook_ping(request):
+    """Endpoint de prueba para verificar que MercadoPago (o cualquier cliente)
+    pueda alcanzar el servidor. Loguea headers, método y body y devuelve 200.
+    Úsalo desde curl o desde el dashboard de MercadoPago para probar conectividad.
+    """
+    try:
+        body = request.body.decode('utf-8') if request.body else ''
+    except Exception:
+        body = '<binary>'
+
+    logger.info('webhook_ping received method=%s path=%s headers=%s body=%s', request.method, request.path, dict(request.headers), body)
+    return JsonResponse({'ok': True, 'method': request.method, 'path': request.path}, status=200)
