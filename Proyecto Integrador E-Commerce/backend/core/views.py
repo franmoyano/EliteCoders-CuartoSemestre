@@ -222,7 +222,10 @@ class CarritoViewSet(viewsets.ModelViewSet):
 # ------------------------------------------------------------------
 # Endpoints para manejar el retorno desde MercadoPago
 # ------------------------------------------------------------------
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, JsonResponse
+from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 def payments_success(request, carrito_id):
@@ -287,15 +290,22 @@ def payments_success(request, carrito_id):
     carrito.completado = True
     carrito.save()
 
-    # Responder con una página simple que permite volver al frontend
-    html = f"""
-    <html><body>
-      <h1>Pago confirmado</h1>
-      <p>Tu compra fue procesada correctamente. Gracias.</p>
-      <p><a href="/">Volver al sitio</a></p>
-    </body></html>
-    """
-    return HttpResponse(html)
+    # Una vez procesado en el servidor, redirigimos al frontend (la UI en Vue)
+    # pasando los parámetros relevantes en la query para que la página
+    # `PaymentsSuccess` pueda mostrarlos.
+    query_parts = []
+    if collection_id:
+        query_parts.append(f"collection_id={collection_id}")
+    if collection_status:
+        query_parts.append(f"collection_status={collection_status}")
+    if collection_id is None and collection_status is None:
+        # No hay información adicional, pero igual redirigimos
+        redirect_url = f"{settings.FRONTEND_URL_RAILWAY}/payments/success/{carrito.id}/"
+    else:
+        qs = "&".join(query_parts)
+        redirect_url = f"{settings.FRONTEND_URL_RAILWAY}/payments/success/{carrito.id}/?{qs}"
+
+    return redirect(redirect_url)
 
 
 def payments_failure(request, carrito_id):
@@ -308,11 +318,86 @@ def payments_failure(request, carrito_id):
         return HttpResponseBadRequest("Carrito no encontrado")
 
     # Aquí podemos mostrar una página con instrucciones o volver al carrito
-    html = f"""
-    <html><body>
-      <h1>Pago no completado</h1>
-      <p>El pago no fue completado. Tu carrito permanece intacto.</p>
-      <p><a href="/cart">Volver al carrito</a></p>
-    </body></html>
+    # Redirigir al frontend (la página Vue) para que muestre el mensaje.
+    redirect_url = f"{settings.FRONTEND_URL_RAILWAY}/payments/failure/{carrito.id}/"
+    return redirect(redirect_url)
+
+
+@csrf_exempt
+def mercadopago_webhook(request):
     """
-    return HttpResponse(html)
+    Endpoint para recibir notificaciones (IPN) de MercadoPago.
+    Se espera un JSON con la forma {"action": "payment.created", "data": {"id": <payment_id>}}
+    Aquí verificamos el pago con la SDK y si está aprobado creamos el Pedido
+    y las Inscripciones asociadas al carrito (usando external_reference).
+    """
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        return HttpResponseBadRequest('Invalid JSON')
+
+    # Extraer payment id de la notificación
+    payment_id = None
+    if isinstance(payload, dict):
+        data = payload.get('data') or {}
+        if isinstance(data, dict):
+            payment_id = data.get('id')
+        # Algunos webhooks usan payload['type'] y payload['id']
+        if not payment_id:
+            payment_id = payload.get('id')
+
+    if not payment_id:
+        return HttpResponseBadRequest('No payment id in payload')
+
+    sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+    try:
+        payment_resp = sdk.payment().get(payment_id)
+        payment_info = payment_resp.get('response', {})
+    except Exception as e:
+        # Loguear y devolver 200 para que MP no reintente infinitamente
+        print('Error fetching MP payment:', e)
+        return JsonResponse({'ok': False, 'error': 'payment fetch failed'}, status=200)
+
+    # Buscar external_reference que contiene el carrito id según el checkout
+    external_reference = payment_info.get('external_reference')
+    try:
+        carrito_id = int(external_reference) if external_reference else None
+    except Exception:
+        carrito_id = None
+
+    # Determinar si pago aprobado
+    status_mp = (payment_info.get('status') or payment_info.get('collection_status') or '').lower()
+    if not carrito_id:
+        # No podemos procesar sin referencia al carrito
+        return JsonResponse({'ok': False, 'reason': 'missing external_reference'}, status=200)
+
+    if status_mp != 'approved':
+        # No aprobado: devolver 200 para confirmar recepción
+        return JsonResponse({'ok': True, 'processed': False, 'status': status_mp}, status=200)
+
+    # Procesar: crear Pedido, ItemPedido e Inscripciones (idéntico a payments_success)
+    try:
+        carrito = Carrito.objects.get(pk=carrito_id)
+    except Carrito.DoesNotExist:
+        return JsonResponse({'ok': False, 'reason': 'carrito not found'}, status=200)
+
+    # Evitar procesar dos veces: si carrito ya está completado, devolvemos ok
+    if carrito.completado:
+        return JsonResponse({'ok': True, 'processed': False, 'reason': 'already completed'}, status=200)
+
+    items = list(carrito.items.all())
+    pedido = Pedido.objects.create(usuario=carrito.usuario, completado=True)
+    for item in items:
+        from .models import ItemPedido
+        ItemPedido.objects.create(pedido=pedido, curso=item.curso, precio_compra=item.curso.precio)
+        if not Inscripcion.objects.filter(usuario=carrito.usuario, curso=item.curso).exists():
+            Inscripcion.objects.create(usuario=carrito.usuario, curso=item.curso)
+
+    carrito.vaciar()
+    carrito.completado = True
+    carrito.save()
+
+    return JsonResponse({'ok': True, 'processed': True}, status=200)
