@@ -257,107 +257,107 @@ import json
 logger = logging.getLogger(__name__)
 
 
-def payments_success(request, carrito_id):
-    """
-    Endpoint público al que MercadoPago redirige después del pago exitoso.
-    Valida el pago con la SDK de MercadoPago, crea un Pedido desde el carrito,
-    genera inscripciones para el usuario y marca el carrito como completado.
-    """
-    try:
-        carrito = Carrito.objects.get(pk=carrito_id)
-    except Carrito.DoesNotExist:
-        logger.warning('payments_success: carrito %s not found', carrito_id)
-        return HttpResponseBadRequest("Carrito no encontrado")
-
-    # MercadoPago pasa collection_id o payment_id en la query string
-    collection_id = request.GET.get('collection_id') or request.GET.get('payment_id')
-    collection_status = request.GET.get('collection_status') or request.GET.get('status')
-    logger.info('payments_success called for carrito_id=%s, collection_id=%s, collection_status=%s', carrito_id, collection_id, collection_status)
-
-    if not collection_id and not collection_status:
-        logger.warning('payments_success: missing collection_id and collection_status for carrito %s', carrito_id)
-        return HttpResponseBadRequest("Parámetros de pago ausentes")
-
-    sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
-
-    # Intentar verificar el pago con la API de MercadoPago si tenemos collection_id
-    payment_approved = False
-    payment_info = None
-    if collection_id:
-        try:
-            payment_resp = sdk.payment().get(collection_id)
-            payment_info = payment_resp.get('response', {})
-            # Algunos entornos usan 'status' o 'collection_status'
-            status_mp = payment_info.get('status') or payment_info.get('collection_status')
-            if status_mp and status_mp.lower() == 'approved':
-                payment_approved = True
-            logger.info('payments_success: fetched payment info for id=%s status=%s', collection_id, status_mp)
-        except Exception:
-            logger.exception('payments_success: error fetching payment from MercadoPago for id=%s', collection_id)
-            payment_info = None
-
-    # Si no pudimos verificar por SDK, confiar en collection_status si viene en la query
-    if not payment_approved and collection_status:
-        if collection_status.lower() == 'approved':
-            payment_approved = True
-
-    if not payment_approved:
-        logger.warning('payments_success: payment not approved for carrito=%s (collection_id=%s, collection_status=%s)', carrito_id, collection_id, collection_status)
-        return HttpResponse("Pago no aprobado. Si crees que es un error, contacta soporte.")
-
-    # Pago aprobado: convertir carrito en pedido, crear items y generar inscripciones
-    items = list(carrito.items.all())
-    logger.info('payments_success: processing carrito %s with %d items', carrito_id, len(items))
-
-    pedido = Pedido.objects.create(usuario=carrito.usuario, completado=True)
-    created_inscriptions = []
-    for item in items:
-        from .models import ItemPedido
-        ItemPedido.objects.create(pedido=pedido, curso=item.curso, precio_compra=item.curso.precio)
-        if not Inscripcion.objects.filter(usuario=carrito.usuario, curso=item.curso).exists():
-            Inscripcion.objects.create(usuario=carrito.usuario, curso=item.curso)
-            created_inscriptions.append(item.curso.id)
-        else:
-            logger.info('payments_success: user %s already enrolled in curso %s', carrito.usuario_id, item.curso.id)
-
-    carrito.vaciar()
-    carrito.completado = True
-    carrito.save()
-    logger.info('payments_success: created pedido %s and inscriptions %s for carrito %s', pedido.id, created_inscriptions, carrito_id)
-
-    # Una vez procesado en el servidor, redirigimos al frontend (la UI en Vue)
-    # pasando los parámetros relevantes en la query para que la página
-    # `PaymentsSuccess` pueda mostrarlos.
-    query_parts = []
-    if collection_id:
-        query_parts.append(f"collection_id={collection_id}")
-    if collection_status:
-        query_parts.append(f"collection_status={collection_status}")
-    if collection_id is None and collection_status is None:
-        # No hay información adicional, pero igual redirigimos
-        redirect_url = f"{settings.FRONTEND_URL_RAILWAY}/payments/success/{carrito.id}/"
-    else:
-        qs = "&".join(query_parts)
-        redirect_url = f"{settings.FRONTEND_URL_RAILWAY}/payments/success/{carrito.id}/?{qs}"
-
-    logger.info('payments_success: redirecting to frontend %s', redirect_url)
-    return redirect(redirect_url)
-
-
-def payments_failure(request, carrito_id):
-    """
-    Página simple para pagos fallidos o cancelados por el usuario.
-    """
-    try:
-        carrito = Carrito.objects.get(pk=carrito_id)
-    except Carrito.DoesNotExist:
-        logger.warning('payments_failure: carrito %s not found', carrito_id)
-        return HttpResponseBadRequest("Carrito no encontrado")
-
-    # Redirigir al frontend (la página Vue) para que muestre el mensaje.
-    redirect_url = f"{settings.FRONTEND_URL_RAILWAY}/payments/failure/{carrito.id}/"
-    logger.info('payments_failure redirecting carrito=%s to %s', carrito_id, redirect_url)
-    return redirect(redirect_url)
+# def payments_success(request, carrito_id):
+#     """
+#     Endpoint público al que MercadoPago redirige después del pago exitoso.
+#     Valida el pago con la SDK de MercadoPago, crea un Pedido desde el carrito,
+#     genera inscripciones para el usuario y marca el carrito como completado.
+#     """
+#     try:
+#         carrito = Carrito.objects.get(pk=carrito_id)
+#     except Carrito.DoesNotExist:
+#         logger.warning('payments_success: carrito %s not found', carrito_id)
+#         return HttpResponseBadRequest("Carrito no encontrado")
+#
+#     # MercadoPago pasa collection_id o payment_id en la query string
+#     collection_id = request.GET.get('collection_id') or request.GET.get('payment_id')
+#     collection_status = request.GET.get('collection_status') or request.GET.get('status')
+#     logger.info('payments_success called for carrito_id=%s, collection_id=%s, collection_status=%s', carrito_id, collection_id, collection_status)
+#
+#     if not collection_id and not collection_status:
+#         logger.warning('payments_success: missing collection_id and collection_status for carrito %s', carrito_id)
+#         return HttpResponseBadRequest("Parámetros de pago ausentes")
+#
+#     sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+#
+#     # Intentar verificar el pago con la API de MercadoPago si tenemos collection_id
+#     payment_approved = False
+#     payment_info = None
+#     if collection_id:
+#         try:
+#             payment_resp = sdk.payment().get(collection_id)
+#             payment_info = payment_resp.get('response', {})
+#             # Algunos entornos usan 'status' o 'collection_status'
+#             status_mp = payment_info.get('status') or payment_info.get('collection_status')
+#             if status_mp and status_mp.lower() == 'approved':
+#                 payment_approved = True
+#             logger.info('payments_success: fetched payment info for id=%s status=%s', collection_id, status_mp)
+#         except Exception:
+#             logger.exception('payments_success: error fetching payment from MercadoPago for id=%s', collection_id)
+#             payment_info = None
+#
+#     # Si no pudimos verificar por SDK, confiar en collection_status si viene en la query
+#     if not payment_approved and collection_status:
+#         if collection_status.lower() == 'approved':
+#             payment_approved = True
+#
+#     if not payment_approved:
+#         logger.warning('payments_success: payment not approved for carrito=%s (collection_id=%s, collection_status=%s)', carrito_id, collection_id, collection_status)
+#         return HttpResponse("Pago no aprobado. Si crees que es un error, contacta soporte.")
+#
+#     # Pago aprobado: convertir carrito en pedido, crear items y generar inscripciones
+#     items = list(carrito.items.all())
+#     logger.info('payments_success: processing carrito %s with %d items', carrito_id, len(items))
+#
+#     pedido = Pedido.objects.create(usuario=carrito.usuario, completado=True)
+#     created_inscriptions = []
+#     for item in items:
+#         from .models import ItemPedido
+#         ItemPedido.objects.create(pedido=pedido, curso=item.curso, precio_compra=item.curso.precio)
+#         if not Inscripcion.objects.filter(usuario=carrito.usuario, curso=item.curso).exists():
+#             Inscripcion.objects.create(usuario=carrito.usuario, curso=item.curso)
+#             created_inscriptions.append(item.curso.id)
+#         else:
+#             logger.info('payments_success: user %s already enrolled in curso %s', carrito.usuario_id, item.curso.id)
+#
+#     carrito.vaciar()
+#     carrito.completado = True
+#     carrito.save()
+#     logger.info('payments_success: created pedido %s and inscriptions %s for carrito %s', pedido.id, created_inscriptions, carrito_id)
+#
+#     # Una vez procesado en el servidor, redirigimos al frontend (la UI en Vue)
+#     # pasando los parámetros relevantes en la query para que la página
+#     # `PaymentsSuccess` pueda mostrarlos.
+#     query_parts = []
+#     if collection_id:
+#         query_parts.append(f"collection_id={collection_id}")
+#     if collection_status:
+#         query_parts.append(f"collection_status={collection_status}")
+#     if collection_id is None and collection_status is None:
+#         # No hay información adicional, pero igual redirigimos
+#         redirect_url = f"{settings.FRONTEND_URL_RAILWAY}/payments/success/{carrito.id}/"
+#     else:
+#         qs = "&".join(query_parts)
+#         redirect_url = f"{settings.FRONTEND_URL_RAILWAY}/payments/success/{carrito.id}/?{qs}"
+#
+#     logger.info('payments_success: redirecting to frontend %s', redirect_url)
+#     return redirect(redirect_url)
+#
+#
+# def payments_failure(request, carrito_id):
+#     """
+#     Página simple para pagos fallidos o cancelados por el usuario.
+#     """
+#     try:
+#         carrito = Carrito.objects.get(pk=carrito_id)
+#     except Carrito.DoesNotExist:
+#         logger.warning('payments_failure: carrito %s not found', carrito_id)
+#         return HttpResponseBadRequest("Carrito no encontrado")
+#
+#     # Redirigir al frontend (la página Vue) para que muestre el mensaje.
+#     redirect_url = f"{settings.FRONTEND_URL_RAILWAY}/payments/failure/{carrito.id}/"
+#     logger.info('payments_failure redirecting carrito=%s to %s', carrito_id, redirect_url)
+#     return redirect(redirect_url)
 
 
 @csrf_exempt
@@ -519,39 +519,3 @@ def mercadopago_webhook(request):
                 pedido.id)
 
     return JsonResponse({'ok': True, 'processed': True, 'created': created_inscriptions}, status=200)
-
-# @csrf_exempt
-# def mercadopago_webhook(request):
-#     # --- Esto es lo que querías ver ---
-#     logger.info("========== WEBHOOK RECIBIDO ==========")
-#     logger.info(f"METODO: {request.method}")
-#     logger.info(f"HEADERS: {dict(request.headers)}")
-#     logger.info(f"QUERY PARAMS (GET): {request.GET}")
-#
-#     try:
-#         body_unicode = request.body.decode('utf-8')
-#         logger.info(f"BODY (raw): {body_unicode}")
-#         # Opcional: intentar parsear como JSON
-#         # body_json = json.loads(body_unicode)
-#         # logger.info(f"BODY (json): {body_json}")
-#     except Exception as e:
-#         logger.warning(f"No se pudo leer o parsear el body: {e}")
-#     # --- Fin de la depuración ---
-#
-#     # --- Esta es la corrección ---
-#     # Devuelve siempre 200 OK para que MercadoPago no reintente.
-#     return JsonResponse({"status": "received"}, status=200)
-
-@csrf_exempt
-def webhook_ping(request):
-    """Endpoint de prueba para verificar que MercadoPago (o cualquier cliente)
-    pueda alcanzar el servidor. Loguea headers, método y body y devuelve 200.
-    Úsalo desde curl o desde el dashboard de MercadoPago para probar conectividad.
-    """
-    try:
-        body = request.body.decode('utf-8') if request.body else ''
-    except Exception:
-        body = '<binary>'
-
-    logger.info('webhook_ping received method=%s path=%s headers=%s body=%s', request.method, request.path, dict(request.headers), body)
-    return JsonResponse({'ok': True, 'method': request.method, 'path': request.path}, status=200)

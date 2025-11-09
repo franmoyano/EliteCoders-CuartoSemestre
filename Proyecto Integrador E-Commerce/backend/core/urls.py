@@ -25,9 +25,7 @@ urlpatterns = [
     path('', include(cursos_router.urls)),
     path('mis-cursos/', MisCursosView.as_view(), name='mis-cursos'),
     # Endpoints to handle MercadoPago redirects / webhooks
-    path('payments/success/<int:carrito_id>/', views.payments_success, name='payments-success-backend'),
-    path('payments/failure/<int:carrito_id>/', views.payments_failure, name='payments-failure-backend'),
+    # path('payments/success/<int:carrito_id>/', views.payments_success, name='payments-success-backend'),
+    # path('payments/failure/<int:carrito_id>/', views.payments_failure, name='payments-failure-backend'),
     path('webhook/mercadopago/', views.mercadopago_webhook, name='mp-webhook'),
-    # Test endpoint to verify webhook reachability from external services
-    path('webhook/test/', views.webhook_ping, name='webhook-ping'),
 ]
