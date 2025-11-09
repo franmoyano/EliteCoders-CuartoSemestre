@@ -209,7 +209,7 @@ class CarritoViewSet(viewsets.ModelViewSet):
         # Build an absolute URL and ensure it uses HTTPS for external services
         notification_url = request.build_absolute_uri(f"/api/v1/webhook/mercadopago/")
         # If a public backend URL is configured, prefer it (allows correct host behind proxies)
-        backend_public = settings.BACKEND_PUBLIC_URL
+        backend_public = f'https://{settings.BACKEND_PUBLIC_URL}'
         if backend_public:
             notification_url = urljoin(backend_public.rstrip('/') + '/', 'api/v1/webhook/mercadopago/')
         else:
