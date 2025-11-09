@@ -268,6 +268,80 @@ import json
 
 logger = logging.getLogger(__name__)
 
+Aquí
+tienes
+el
+código
+completo
+de
+la
+vista.
+
+Este
+código
+incluye
+todas
+las
+importaciones
+necesarias
+al
+principio
+y
+la
+función
+mercadopago_webhook
+completa
+con
+la
+validación
+de
+firma(HMAC)
+y
+la
+búsqueda
+robusta
+del ID(tanto
+en
+el
+cuerpo
+JSON
+como
+en
+los
+parámetros
+de
+la
+URL).
+
+Código
+Completo(views.py)
+Python
+
+# -----------------------------------------------------------------
+# 1. IMPORTS NECESARIOS al inicio de tu views.py
+# -----------------------------------------------------------------
+import hmac
+import hashlib
+import json
+import logging
+import urllib.parse
+
+from django.conf import settings
+from django.http import (
+    JsonResponse,
+    HttpResponseNotAllowed,
+    HttpResponseBadRequest,
+    HttpResponse,
+)
+from django.views.decorators.csrf import csrf_exempt
+
+# Configura tu logger (si no lo tienes ya)
+logger = logging.getLogger(__name__)
+
+
+# -----------------------------------------------------------------
+# 2. VISTA COMPLETA DEL WEBHOOK
+# -----------------------------------------------------------------
 @csrf_exempt
 def mercadopago_webhook(request):
     """
@@ -278,9 +352,14 @@ def mercadopago_webhook(request):
         return HttpResponseNotAllowed(['POST'])
 
     # --- INICIO DE VALIDACIÓN DE FIRMA ---
-    logger.debug('mercadopago_webhook received request: headers=%s body=%s',
-                 dict(request.headers),
-                 request.body.decode('utf-8'))
+
+    # Logueamos los datos crudos para debug
+    logger.debug(
+        'mercadopago_webhook received request: headers=%s body=%s query=%s',
+        dict(request.headers),
+        request.body.decode('utf-8'),
+        request.META.get('QUERY_STRING', '')
+    )
 
     # 1. Obtener tu clave secreta de settings
     secret = settings.MERCADOPAGO_WEBHOOK_SECRET
@@ -297,55 +376,69 @@ def mercadopago_webhook(request):
         return HttpResponseBadRequest('Missing required headers')
 
     # ---------------------------------------------------------------------
-    # 3. VALIDACIÓN HMAC-SHA256 (ESTE ES EL CÓDIGO CORRECTO)
+    # 3. VALIDACIÓN HMAC-SHA256 (Versión Robusta)
     # ---------------------------------------------------------------------
     try:
         # 3.1. Parsear el header x-signature para obtener ts y v1
-        parts = signature_header.split(',')
         ts_str = None
         v1_hash_recibido = None
-        
-        # Iteramos por si los headers vienen en orden diferente
+
+        parts = signature_header.split(',')
         for part in parts:
+            # strip() es importante para quitar espacios
             key, value = part.strip().split('=', 1)
             if key == 'ts':
                 ts_str = value
             elif key == 'v1':
                 v1_hash_recibido = value
-        
+
         if not ts_str or not v1_hash_recibido:
             logger.warning('Header x-signature con formato inválido: %s', signature_header)
             return HttpResponseBadRequest('Invalid signature header format')
 
-        # 3.2. Obtener el ID de la notificación del payload (cuerpo)
-        # Es crucial usar request.body (bytes) tal cual lo recibes
-        body_str = request.body.decode('utf-8')
-        body_json = json.loads(body_str)
-        
-        # El ID puede estar en 'data.id' (para pagos) o solo 'id' (para otras notifs)
-        notification_id = body_json.get('data', {}).get('id')
+        # 3.2. Obtener el ID de la notificación (MÉTODO ROBUSTO)
+        notification_id = None
+
+        # Primero, intentar leer el ID del cuerpo (body) JSON
+        try:
+            # Usamos request.body (bytes)
+            body_json = json.loads(request.body.decode('utf-8'))
+            notification_id = body_json.get('data', {}).get('id')
+            if not notification_id:
+                notification_id = body_json.get('id')
+        except json.JSONDecodeError:
+            logger.warning("El cuerpo del webhook no es un JSON válido o está vacío. Revisando URL.")
+            pass  # Es normal si el body está vacío, pasamos a verificar la URL
+
+        # Si no se encontró en el body, intentar leerlo de los query params
         if not notification_id:
-            notification_id = body_json.get('id')
-        
+            logger.info("ID no encontrado en el body, revisando query params...")
+            query_params = urllib.parse.parse_qs(request.META.get('QUERY_STRING', ''))
+
+            # Buscamos 'data.id' o 'id' (MP usa ambos)
+            if 'data.id' in query_params:
+                notification_id = query_params['data.id'][0]
+            elif 'id' in query_params:
+                notification_id = query_params['id'][0]
+
         if not notification_id:
-            logger.warning('No se pudo encontrar "id" o "data.id" en el payload del webhook.')
-            return HttpResponseBadRequest('Missing notification id in payload')
+            logger.warning('No se pudo encontrar "id" o "data.id" ni en el payload ni en la URL.')
+            return HttpResponseBadRequest('Missing notification id')
 
         # 3.3. Crear el "manifest" (plantilla) para firmar
         manifest = f"id:{notification_id};request-id:{request_id_header};ts:{ts_str};"
-        
-        # Convertir a bytes para el cálculo HMAC
+
+        # 3.4. Generar el hash HMAC-SHA256
         manifest_bytes = manifest.encode('utf-8')
         secret_bytes = secret.encode('utf-8')
 
-        # 3.4. Generar el hash HMAC-SHA256
-        hash_generado = hmac.new(secret_bytes, 
-                                 manifest_bytes, 
+        hash_generado = hmac.new(secret_bytes,
+                                 manifest_bytes,
                                  hashlib.sha256).hexdigest()
 
         # 3.5. Comparar los hashes de forma segura
         if not hmac.compare_digest(hash_generado, v1_hash_recibido):
-            # Este log es muy útil para debuggear
+            # Este log es el más importante para ti ahora mismo
             logger.error(
                 '¡FIRMA INVÁLIDA! Recibida: %s. Generada: %s. Manifest usado: %s',
                 v1_hash_recibido, hash_generado, manifest
@@ -353,7 +446,7 @@ def mercadopago_webhook(request):
             return JsonResponse({'error': 'invalid signature'}, status=403)
 
     except Exception as e:
-        logger.error('Error catastrófico durante la validación de la firma: %s', str(e))
+        logger.error('Error catastrófico durante la validación de la firma: %s', str(e), exc_info=True)
         # Retornamos 400 (Bad Request) porque algo en la petición falló al procesar
         return JsonResponse({'error': 'signature validation processing error'}, status=400)
 
@@ -361,7 +454,11 @@ def mercadopago_webhook(request):
 
     # ¡FIRMA VÁLIDA!
     # Si llegaste hasta aquí, la petición es auténtica.
-    logger.info('Firma de Webhook validada exitosamente para el request-id: %s', request_id_header)
+    logger.info(
+        'Firma de Webhook validada exitosamente para el ID: %s (Request: %s)',
+        notification_id,
+        request_id_header
+    )
 
     # 4. Obtener el payment_id (CORRECCIÓN para UnboundLocalError)
     payment_id = None  # Inicializar
