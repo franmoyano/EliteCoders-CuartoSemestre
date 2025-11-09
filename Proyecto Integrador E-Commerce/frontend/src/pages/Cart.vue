@@ -154,6 +154,7 @@ const checkout = async () => {
     // que el pago fue exitoso y marque el carrito como completado.
     const response = await checkoutCarrito(carrito.value.id);
     if (response && response.data && response.data.init_point) {
+      console.log(response)
       window.location.href = response.data.init_point;
       return;
     }
