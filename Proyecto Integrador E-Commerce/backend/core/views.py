@@ -205,7 +205,7 @@ class CarritoViewSet(viewsets.ModelViewSet):
             })
 
         # notification_url: MercadoPago will POST notifications here (webhook)
-        # notification_url = request.build_absolute_uri(f"/api/v1/webhook/mercadopago/")
+        notification_url = request.build_absolute_uri(f"/api/v1/webhook/mercadopago/")
 
         # For auto_return to work MercadoPago requires a valid back_urls.success
         # that points to a web page (frontend). We'll set back_urls to the
@@ -221,7 +221,7 @@ class CarritoViewSet(viewsets.ModelViewSet):
                 "success": frontend_success,
                 "failure": frontend_failure,
             },
-            # "notification_url": notification_url,
+            "notification_url": notification_url,
             "auto_return": "approved",
             "external_reference": str(carrito.id),
         }
