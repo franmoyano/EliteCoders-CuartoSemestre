@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+from urllib.parse import urljoin, urlparse, urlunparse
 
 import mercadopago
 import logging
@@ -205,7 +206,17 @@ class CarritoViewSet(viewsets.ModelViewSet):
             })
 
         # notification_url: MercadoPago will POST notifications here (webhook)
+        # Build an absolute URL and ensure it uses HTTPS for external services
         notification_url = request.build_absolute_uri(f"/api/v1/webhook/mercadopago/")
+        # If a public backend URL is configured, prefer it (allows correct host behind proxies)
+        backend_public = settings.BACKEND_PUBLIC_URL
+        if backend_public:
+            notification_url = urljoin(backend_public.rstrip('/') + '/', 'api/v1/webhook/mercadopago/')
+        else:
+            parsed = urlparse(notification_url)
+            if parsed.scheme != 'https':
+                notification_url = urlunparse(('https', parsed.netloc, parsed.path, parsed.params, parsed.query, parsed.fragment))
+        logger.info('Using MercadoPago notification_url=%s', notification_url)
 
         # For auto_return to work MercadoPago requires a valid back_urls.success
         # that points to a web page (frontend). We'll set back_urls to the
