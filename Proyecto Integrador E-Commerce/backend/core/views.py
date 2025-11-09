@@ -1,5 +1,3 @@
-import hashlib
-import hmac
 from urllib.parse import urljoin, urlparse, urlunparse
 
 import mercadopago
@@ -293,23 +291,11 @@ def mercadopago_webhook(request):
         logger.warning('Webhook recibido sin headers x-signature o x-request-id')
         return HttpResponseBadRequest('Missing required headers')
 
-    # 3. Parsear el header x-signature para obtener 'ts' y 'v1'
-    try:
-        parts = signature_header.split(',')
-        ts = v1_hash = None
-        for part in parts:
-            key, value = part.split('=', 1)
-            if key == 'ts':
-                ts = value
-            elif key == 'v1':
-                v1_hash = value
-
-        if not ts or not v1_hash:
-            raise ValueError("Formato de x-signature inválido")
-
-    except Exception as e:
-        logger.warning(f'Error parseando x-signature: {e}')
-        return HttpResponseBadRequest('Invalid x-signature format')
+    # 3. NO parsear el header x-signature: comparar el valor completo tal cual
+    #    con el secreto configurado. Si no coinciden, finalizar la operación.
+    if signature_header != secret:
+        logger.error('Firma de Webhook inválida. Recibida: %s', signature_header)
+        return JsonResponse({'error': 'invalid signature'}, status=403)
 
     # 4. Obtener el payment_id (CORRECCIÓN para UnboundLocalError)
     payment_id = None  # Inicializar
@@ -338,22 +324,8 @@ def mercadopago_webhook(request):
         logger.exception('Error grave al parsear el request del webhook: %s', e)
         return JsonResponse({'ok': False, 'error': 'request parsing failed'}, status=200)
 
-    # 5. Crear el "manifest" o plantilla de firma
-    manifest_template = f"id:{payment_id};request-id:{request_id_header};ts:{ts};"
-
-    # 6. Calcular la firma HMAC-SHA256
-    calculated_hash = hmac.new(
-        secret.encode('utf-8'),
-        msg=manifest_template.encode('utf-8'),
-        digestmod=hashlib.sha256
-    ).hexdigest()
-
-    # 7. Comparar de forma segura la firma calculada con la recibida (v1)
-    if not hmac.compare_digest(calculated_hash, v1_hash):
-        logger.error(f'Firma de Webhook inválida. Calculada: {calculated_hash}, Recibida: {v1_hash}')
-        return JsonResponse({'error': 'invalid signature'}, status=403)  # 403 Forbidden
-
-    logger.info(f'Firma de Webhook validada exitosamente para payment_id: {payment_id}')
+    # La firma fue validada arriba mediante comparación directa del header
+    logger.info('Firma de Webhook validada exitosamente (raw header match) para payment_id: %s', payment_id)
 
     # --- FIN DE VALIDACIÓN DE FIRMA ---
 
