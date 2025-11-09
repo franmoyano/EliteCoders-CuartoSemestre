@@ -2,13 +2,12 @@
 import { ref, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 import { getCursos } from "@/api/cursos";
-
-// ✅ Importar archivos para que Vite los procese
 import vueCourse      from "@/assets/courses/vue-course.jpg";
 import uxCourse       from "@/assets/courses/ux-course.jpg";
 import dataCourse     from "@/assets/courses/data-course.png";
 import marketingCourse from "@/assets/courses/marketing-course.jpg";
 import placeholder    from "@/assets/courses/placeholder.jpg";
+import { formatPrice } from "../utils/stringUtils";
 
 const cursos = ref([]);
 const loading = ref(true);
@@ -69,7 +68,7 @@ onMounted(async () => {
           </div>
 
           <div class="course-footer">
-            <div class="price">${{ Number(c.precio).toFixed(2) }}</div>
+            <div class="price">{{ formatPrice(c.precio) }}</div>
             <span class="ver-mas">Ver detalle →</span>
           </div>
         </div>
@@ -109,6 +108,6 @@ onMounted(async () => {
 .chip-purple { background: #f5f3ff; color: #7c3aed; border-color:#ddd6fe; }
 
 .course-footer { margin-top: .75rem; display: flex; align-items: center; justify-content: space-between; }
-.price { font-weight: 700; font-size: 1.05rem; }
+.price { font-weight: 700; font-size: 1.05rem; color: var(--mint) }
 .ver-mas { color: #2563eb; font-weight: 600; font-size: .9rem; }
 </style>
