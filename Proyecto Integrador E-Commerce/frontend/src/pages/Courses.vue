@@ -98,7 +98,7 @@ onMounted(async () => {
 .course-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.06); border-color: #cbd5e1; }
 .course-img { width: 100%; max-height: 220px; object-fit: cover; display: block; }
 .course-body { padding: 12px 14px 14px; }
-.course-title { font-weight: 600; font-size: 1.05rem; }
+.course-title { font-weight: 600; font-size: 1.05rem; color: #000; }
 .course-desc { margin-top: .25rem; color: #64748b; font-size: .92rem; min-height: 44px; }
 
 .chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
