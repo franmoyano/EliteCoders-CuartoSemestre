@@ -244,7 +244,7 @@ class CarritoViewSet(viewsets.ModelViewSet):
         return Response({
             "preference_id": preference["id"],
             # reemplazar por init_point de producción al mover a prod
-            "init_point": preference[{settings.MERCADOPAGO_INIT_POINT}],
+            "init_point": preference[f'{settings.MERCADOPAGO_INIT_POINT}'],
         }, status=status.HTTP_201_CREATED)
 
 
