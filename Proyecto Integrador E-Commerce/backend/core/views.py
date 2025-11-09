@@ -239,7 +239,8 @@ class CarritoViewSet(viewsets.ModelViewSet):
         if not preference or 'id' not in preference or 'init_point' not in preference:
             print('Unexpected preference response from MercadoPago:', preference_response)
             return Response({'error': 'invalid_preference_response', 'details': preference_response}, status=status.HTTP_502_BAD_GATEWAY)
-
+        
+        logger.warning('MercadoPago preference created: %s', preference)
         return Response({
             "preference_id": preference["id"],
             # reemplazar por init_point de producción al mover a prod
