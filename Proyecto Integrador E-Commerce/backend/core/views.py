@@ -276,6 +276,10 @@ def mercadopago_webhook(request):
         return HttpResponseNotAllowed(['POST'])
 
     # --- INICIO DE VALIDACIÓN DE FIRMA ---
+    # log the complete request for debbuging in json format
+    logger.debug('mercadopago_webhook received request: headers=%s body=%s',
+                 dict(request.headers),
+                 request.body.decode('utf-8'))
 
     # 1. Obtener tu clave secreta de settings
     secret = settings.MERCADOPAGO_WEBHOOK_SECRET
