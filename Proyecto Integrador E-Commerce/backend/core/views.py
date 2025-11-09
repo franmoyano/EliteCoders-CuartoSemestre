@@ -8,7 +8,7 @@ from rest_framework import viewsets, status, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-
+from django.shortcuts import redirect
 from .models import Categoria, Curso, Instructor, Leccion, Inscripcion, ItemCarrito, Carrito, Pedido, ItemPedido
 from .serializers import (
     CategoriaSerializer, InstructorSerializer, LeccionSerializer, EmptySerializer,
@@ -240,6 +240,7 @@ class CarritoViewSet(viewsets.ModelViewSet):
             print('Unexpected preference response from MercadoPago:', preference_response)
             return Response({'error': 'invalid_preference_response', 'details': preference_response}, status=status.HTTP_502_BAD_GATEWAY)
 
+        redirect(preference.sandbox_init_point)
         return Response({
             "preference_id": preference["id"],
             "init_point": preference["init_point"],
@@ -250,7 +251,7 @@ class CarritoViewSet(viewsets.ModelViewSet):
 # Endpoints para manejar el retorno desde MercadoPago
 # ------------------------------------------------------------------
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed, JsonResponse
-from django.shortcuts import redirect
+
 from django.views.decorators.csrf import csrf_exempt
 import json
 
