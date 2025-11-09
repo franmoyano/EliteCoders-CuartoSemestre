@@ -268,55 +268,6 @@ import json
 
 logger = logging.getLogger(__name__)
 
-Aquí
-tienes
-el
-código
-completo
-de
-la
-vista.
-
-Este
-código
-incluye
-todas
-las
-importaciones
-necesarias
-al
-principio
-y
-la
-función
-mercadopago_webhook
-completa
-con
-la
-validación
-de
-firma(HMAC)
-y
-la
-búsqueda
-robusta
-del ID(tanto
-en
-el
-cuerpo
-JSON
-como
-en
-los
-parámetros
-de
-la
-URL).
-
-Código
-Completo(views.py)
-Python
-
 # -----------------------------------------------------------------
 # 1. IMPORTS NECESARIOS al inicio de tu views.py
 # -----------------------------------------------------------------
@@ -325,15 +276,6 @@ import hashlib
 import json
 import logging
 import urllib.parse
-
-from django.conf import settings
-from django.http import (
-    JsonResponse,
-    HttpResponseNotAllowed,
-    HttpResponseBadRequest,
-    HttpResponse,
-)
-from django.views.decorators.csrf import csrf_exempt
 
 # Configura tu logger (si no lo tienes ya)
 logger = logging.getLogger(__name__)
