@@ -1,3 +1,5 @@
+import hashlib
+import hmac
 from urllib.parse import urljoin, urlparse, urlunparse
 
 import mercadopago
@@ -276,7 +278,6 @@ def mercadopago_webhook(request):
         return HttpResponseNotAllowed(['POST'])
 
     # --- INICIO DE VALIDACIÓN DE FIRMA ---
-    # log the complete request for debbuging in json format
     logger.debug('mercadopago_webhook received request: headers=%s body=%s',
                  dict(request.headers),
                  request.body.decode('utf-8'))
@@ -295,11 +296,72 @@ def mercadopago_webhook(request):
         logger.warning('Webhook recibido sin headers x-signature o x-request-id')
         return HttpResponseBadRequest('Missing required headers')
 
-    # 3. NO parsear el header x-signature: comparar el valor completo tal cual
-    #    con el secreto configurado. Si no coinciden, finalizar la operación.
-    if signature_header != secret:
-        logger.error('Firma de Webhook inválida. Recibida: %s', signature_header)
-        return JsonResponse({'error': 'invalid signature'}, status=403)
+    # ---------------------------------------------------------------------
+    # 3. VALIDACIÓN HMAC-SHA256 (ESTE ES EL CÓDIGO CORRECTO)
+    # ---------------------------------------------------------------------
+    try:
+        # 3.1. Parsear el header x-signature para obtener ts y v1
+        parts = signature_header.split(',')
+        ts_str = None
+        v1_hash_recibido = None
+        
+        # Iteramos por si los headers vienen en orden diferente
+        for part in parts:
+            key, value = part.strip().split('=', 1)
+            if key == 'ts':
+                ts_str = value
+            elif key == 'v1':
+                v1_hash_recibido = value
+        
+        if not ts_str or not v1_hash_recibido:
+            logger.warning('Header x-signature con formato inválido: %s', signature_header)
+            return HttpResponseBadRequest('Invalid signature header format')
+
+        # 3.2. Obtener el ID de la notificación del payload (cuerpo)
+        # Es crucial usar request.body (bytes) tal cual lo recibes
+        body_str = request.body.decode('utf-8')
+        body_json = json.loads(body_str)
+        
+        # El ID puede estar en 'data.id' (para pagos) o solo 'id' (para otras notifs)
+        notification_id = body_json.get('data', {}).get('id')
+        if not notification_id:
+            notification_id = body_json.get('id')
+        
+        if not notification_id:
+            logger.warning('No se pudo encontrar "id" o "data.id" en el payload del webhook.')
+            return HttpResponseBadRequest('Missing notification id in payload')
+
+        # 3.3. Crear el "manifest" (plantilla) para firmar
+        manifest = f"id:{notification_id};request-id:{request_id_header};ts:{ts_str};"
+        
+        # Convertir a bytes para el cálculo HMAC
+        manifest_bytes = manifest.encode('utf-8')
+        secret_bytes = secret.encode('utf-8')
+
+        # 3.4. Generar el hash HMAC-SHA256
+        hash_generado = hmac.new(secret_bytes, 
+                                 manifest_bytes, 
+                                 hashlib.sha256).hexdigest()
+
+        # 3.5. Comparar los hashes de forma segura
+        if not hmac.compare_digest(hash_generado, v1_hash_recibido):
+            # Este log es muy útil para debuggear
+            logger.error(
+                '¡FIRMA INVÁLIDA! Recibida: %s. Generada: %s. Manifest usado: %s',
+                v1_hash_recibido, hash_generado, manifest
+            )
+            return JsonResponse({'error': 'invalid signature'}, status=403)
+
+    except Exception as e:
+        logger.error('Error catastrófico durante la validación de la firma: %s', str(e))
+        # Retornamos 400 (Bad Request) porque algo en la petición falló al procesar
+        return JsonResponse({'error': 'signature validation processing error'}, status=400)
+
+    # --- FIN DE VALIDACIÓN DE FIRMA ---
+
+    # ¡FIRMA VÁLIDA!
+    # Si llegaste hasta aquí, la petición es auténtica.
+    logger.info('Firma de Webhook validada exitosamente para el request-id: %s', request_id_header)
 
     # 4. Obtener el payment_id (CORRECCIÓN para UnboundLocalError)
     payment_id = None  # Inicializar
