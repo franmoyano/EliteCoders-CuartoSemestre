@@ -5,6 +5,7 @@ const routes = [
   { path: '/courses', component: () => import('@/pages/Courses.vue') },
   { path: '/courses/:id', component: () => import('@/pages/CourseDetail.vue') },
   { path: '/courses/:id/lessons', component: () => import('@/pages/CourseLessons.vue') },
+  { path: '/courses/:id/lessons/:lessonId', component: () => import('@/pages/Lesson.vue') },
   { path: '/checkout', component: () => import('@/pages/Checkout.vue') },
   { path: '/success', component: () => import('@/pages/Success.vue') },
   { path: '/cart', component: () => import('@/pages/Cart.vue') },

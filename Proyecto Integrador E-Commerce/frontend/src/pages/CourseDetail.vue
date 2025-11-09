@@ -116,10 +116,6 @@ function viewLesson(lesson, index) {
   const lessonId = lesson.id || (index + 1)
   router.push({
     path: `/courses/${course.value.id}/lessons/${lessonId}`,
-    query: { 
-      lesson: lesson.id || `lesson-${index + 1}`,
-      title: lesson.titulo || lesson.title
-    }
   })
 }
 </script>
